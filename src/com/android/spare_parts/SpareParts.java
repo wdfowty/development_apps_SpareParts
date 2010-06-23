@@ -44,6 +44,7 @@ import android.os.Message;
 import android.os.StatFs;
 import android.os.SystemProperties;
 import android.os.RemoteException;
+import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -54,6 +55,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.text.format.Formatter;
+import android.net.Uri;
 import android.util.Log;
 import android.view.IWindowManager;
 import android.widget.Toast;
@@ -82,6 +84,7 @@ public class SpareParts extends PreferenceActivity
     private static String REPO;
 
     ProgressDialog patience = null;
+
     final Handler mHandler = new Handler();
     final Runnable mUpdateResults = new Runnable() {
     	    public void run() {
@@ -116,11 +119,13 @@ public class SpareParts extends PreferenceActivity
     private static final String BOOTANIM_PREF = "bootanim";
     private static final String NOTIFBAR_PREF = "notifbar";
     private static final String TRACKBALL_PREF = "trackball";
+    private static final String PLAYER_PREF = "player";
     private static final String REMVOL_PREF = "remvol";
     private static final String WAKE_PREF = "wake";
     private static final String HTC_IME_PREF = "htc_ime";
     private static final String SWYPE_PREF = "swype";
     private static final String CPU_LED_PREF = "cpu_led";
+    private static final String LAUNCHER2_PREF = "launcher2";
 
     private static final String SYSTEM_PART_SIZE = "system_storage_levels";
     private static final String SYSTEM_STORAGE_PATH = "/system";
@@ -135,6 +140,10 @@ public class SpareParts extends PreferenceActivity
     private static final String OLD_APP2SD_PREF = "old_app2sd_opt";
     private static final String DCCACHE_PREF = "dccache_opt";
     private static final String DCSDCARD_PREF = "dcsdcard_opt";
+
+    private static final String ABOUT_AUTHOR = "about_author";
+    private static final String ABOUT_DONATE = "about_donate";
+    private static final String ABOUT_SOURCES = "about_sources";
 
     private static final String WINDOW_ANIMATIONS_PREF = "window_animations";
     private static final String TRANSITION_ANIMATIONS_PREF = "transition_animations";
@@ -166,10 +175,12 @@ public class SpareParts extends PreferenceActivity
     private ListPreference mNotifbarPref;
     private CheckBoxPreference mTrackballPref;
     private CheckBoxPreference mRemvolPref;
+    private CheckBoxPreference mPlayerPref;
     private CheckBoxPreference mWakePref;
     private CheckBoxPreference mHtcImePref;
     private CheckBoxPreference mSwypePref;
     private CheckBoxPreference mCpuLedPref;
+    private CheckBoxPreference mLauncher2Pref;
 
     private Preference mSystemSize;
     private Preference mDataSize;
@@ -179,6 +190,10 @@ public class SpareParts extends PreferenceActivity
     private CheckBoxPreference mOldApp2sdPref;
     private CheckBoxPreference mDcCachePref;
     private CheckBoxPreference mDcSdcardPref;
+
+    private Preference mAboutAuthor;
+    private Preference mAboutDonate;
+    private Preference mAboutSources;
 
     private ListPreference mWindowAnimationsPref;
     private ListPreference mTransitionAnimationsPref;
@@ -196,11 +211,21 @@ public class SpareParts extends PreferenceActivity
 	super.onCreate(icicle);
 	addPreferencesFromResource(R.xml.spare_parts);
 
+	patience = ProgressDialog.show(this, "Initializing", "Please wait...", true);
+
 	PreferenceScreen prefSet = getPreferenceScreen();
 	REPO = getResources().getString(R.string.repo_url);
 
 	String build = Build.DISPLAY;
-	setStringSummary(ROM_NAME_PREF, build.substring(0, build.indexOf('-')));
+	String rom_name = build.substring(0, build.indexOf('-'));
+
+	// To avoid "stupid" copies
+	if (!rom_name.equals("LeoFroYo")) // You should put the name of your ROM here
+	    popup("LeoFroYo", "This SpareParts is made to be used on leonnib4's ROM: LeoFroYo."
+		  + "\n"
+		  + "If you're using another ROM, you should get my sources and edit it.");
+
+	setStringSummary(ROM_NAME_PREF, rom_name);
 	setStringSummary(ROM_VERSION_PREF, build.substring(build.indexOf('-') + 1));
 	setStringSummary(ROM_BUILD_PREF, Build.ID + " " + (fileExists("/system/framework/framework-res.odex") ? "odex" : "deodex"));
 	setStringSummary(ROM_FINGERPRINT_PREF, getFormattedFingerprint());
@@ -305,6 +330,8 @@ public class SpareParts extends PreferenceActivity
 	mNotifbarPref.setOnPreferenceChangeListener(this);
 	mTrackballPref = (CheckBoxPreference) prefSet.findPreference(TRACKBALL_PREF);
 	mTrackballPref.setOnPreferenceChangeListener(this);
+	mPlayerPref = (CheckBoxPreference) prefSet.findPreference(PLAYER_PREF);
+	mPlayerPref.setOnPreferenceChangeListener(this);
 	mRemvolPref = (CheckBoxPreference) prefSet.findPreference(REMVOL_PREF);
 	mRemvolPref.setOnPreferenceChangeListener(this);
 	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
@@ -315,6 +342,8 @@ public class SpareParts extends PreferenceActivity
 	mSwypePref.setOnPreferenceChangeListener(this);
 	mCpuLedPref = (CheckBoxPreference) prefSet.findPreference(CPU_LED_PREF);
 	mCpuLedPref.setOnPreferenceChangeListener(this);
+	mLauncher2Pref = (CheckBoxPreference) prefSet.findPreference(LAUNCHER2_PREF);
+	mLauncher2Pref.setOnPreferenceChangeListener(this);
 
 	mOldApp2sdPref = (CheckBoxPreference) prefSet.findPreference(OLD_APP2SD_PREF);
 	mOldApp2sdPref.setOnPreferenceChangeListener(this);
@@ -333,6 +362,40 @@ public class SpareParts extends PreferenceActivity
 	mSDCardFATSize     = (Preference) prefSet.findPreference(SDCARDFAT_PART_SIZE);
 	mSDCardEXTSize     = (Preference) prefSet.findPreference(SDCARDEXT_PART_SIZE);
 	SetupFSPartSize();
+
+	mAboutAuthor = (Preference) prefSet.findPreference(ABOUT_AUTHOR);
+	findPreference(ABOUT_AUTHOR)
+	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		    public boolean onPreferenceClick(Preference preference) {
+			String url = "http://forum.xda-developers.com/member.php?u=2398805";
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse(url));
+			startActivity(i);
+			return true;
+		    }
+		});
+	mAboutDonate = (Preference) prefSet.findPreference(ABOUT_DONATE);
+	findPreference(ABOUT_DONATE)
+	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		    public boolean onPreferenceClick(Preference preference) {
+			String url = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=FP4JTHPKJPKS6&lc=FR&item_name=leonnib4&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted";
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse(url));
+			startActivity(i);
+			return true;
+		    }
+		});
+	mAboutSources = (Preference) prefSet.findPreference(ABOUT_SOURCES);
+	findPreference(ABOUT_SOURCES)
+	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		    public boolean onPreferenceClick(Preference preference) {
+			String url = "http://github.com/leonnib4/development_apps_SpareParts";
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse(url));
+			startActivity(i);
+			return true;
+		    }
+		});
 
 	mWindowAnimationsPref = (ListPreference) prefSet.findPreference(WINDOW_ANIMATIONS_PREF);
 	mWindowAnimationsPref.setOnPreferenceChangeListener(this);
@@ -364,6 +427,8 @@ public class SpareParts extends PreferenceActivity
 	    // mSDCardEXTSize.setEnabled(false);
 	    // mSDCardEXTSize.setSummary("no extfs partition");
 	}
+
+	patience.dismiss();
 
 	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
     }
@@ -505,26 +570,41 @@ public class SpareParts extends PreferenceActivity
 	    if (!have) {
 		String[] commands = {
 		    "rwsystem",
-		    "wget -q " + REPO + "framework.jar -O /data/local/framework.jar",
-		    "busybox mv /data/local/tmp/framework.jar /system/framework/framework.jar",
+		    "wget -q " + REPO + "framework.jar -O /data/local/tmp/framework.jar",
+		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
 		    "rosystem",
-		    "wget -q " + REPO + "trackball.apk -O /data/local/trackball.apk",
-		    "pm install -r /data/local/trackball.apk"
+		    "wget -q " + REPO + "trackball.apk -O /data/local/tmp/trackball.apk",
+		    "pm install -r /data/local/tmp/trackball.apk"
 		};
-		sendshell(commands, false, "Downloading and installing TrackballAlert...");
+		sendshell(commands, false, "Downloading and installing Trackball Alert...");
 	    } else {
 		String[] commands = {
 		    "pm uninstall uk.co.lilhermit.android.TrackballAlert"
 		};
-		sendshell(commands, false, "Removing TrackballAlert...");
+		sendshell(commands, false, "Removing Trackball Alert...");
+	    }
+	}
+	else if (preference == mPlayerPref) {
+	    boolean have = mPlayerPref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "wget -q " + REPO + "player.apk -O /data/local/tmp/player.apk",
+		    "pm install -r /data/local/tmp/player.apk"
+		};
+		sendshell(commands, false, "Downloading and installing RockDivxPlayer...");
+	    } else {
+		String[] commands = {
+		    "pm uninstall org.freecoder.android.cmplayer"
+		};
+		sendshell(commands, false, "Removing RockDivxPlayer...");
 	    }
 	}
 	else if (preference == mRemvolPref) {
 	    boolean have = mRemvolPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "remvol.apk -O /data/local/remvol.apk",
-		    "pm install -r /data/local/remvol.apk"
+		    "wget -q " + REPO + "remvol.apk -O /data/local/tmp/remvol.apk",
+		    "pm install -r /data/local/tmp/remvol.apk"
 		};
 		sendshell(commands, false, "Downloading and installing RemVol...");
 	    } else {
@@ -538,8 +618,12 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mWakePref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "wake.apk -O /data/local/wake.apk",
-		    "pm install -r /data/local/wake.apk"
+		    "wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk",
+		    "pm install -r /data/local/tmp/wake.apk",
+		    "rwsystem",
+		    "wget -q " + REPO + "myLock.apk -O /data/local/tmp/myLock.xml",
+		    "mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
+		    "rosystem"
 		};
 		sendshell(commands, false, "Downloading and installing myLock...");
 	    } else {
@@ -553,10 +637,10 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mHtcImePref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "clicker.apk -O /data/local/clicker.apk",
-		    "pm install -r /data/local/clicker.apk",
-		    "wget -q " + REPO + "htc_ime.apk -O /data/local/htc_ime.apk",
-		    "pm install -r /data/local/htc_ime.apk"
+		    "wget -q " + REPO + "clicker.apk -O /data/local/tmp/clicker.apk",
+		    "pm install -r /data/local/tmp/clicker.apk",
+		    "wget -q " + REPO + "htc_ime.apk -O /data/local/tmp/htc_ime.apk",
+		    "pm install -r /data/local/tmp/htc_ime.apk"
 		};
 		sendshell(commands, false, "Downloading and installing HTC_IME...");
 	    } else {
@@ -571,8 +655,8 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mSwypePref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "swype.apk -O /data/local/swype.apk",
-		    "pm install -r /data/local/swype.apk"
+		    "wget -q " + REPO + "swype.apk -O /data/local/tmp/swype.apk",
+		    "pm install -r /data/local/tmp/swype.apk"
 		};
 		sendshell(commands, false, "Downloading and installing Swype...");
 	    } else {
@@ -586,8 +670,8 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mCpuLedPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "cpu_led.apk -O /data/local/cpu_led.apk",
-		    "pm install -r /data/local/cpu_led.apk"
+		    "wget -q " + REPO + "cpu_led.apk -O /data/local/tmp/cpu_led.apk",
+		    "pm install -r /data/local/tmp/cpu_led.apk"
 		};
 		sendshell(commands, false, "Downloading and installing NetMeter+LED...");
 	    } else {
@@ -595,6 +679,23 @@ public class SpareParts extends PreferenceActivity
 		    "pm uninstall com.google.android.netmeterled"
 		};
 		sendshell(commands, false, "Removing NetMeter+LED...");
+	    }
+	}
+	else if (preference == mLauncher2Pref) {
+	    boolean have = mLauncher2Pref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "rwsystem",
+		    "wget -q " + REPO + "Launcher2.apk -O /data/local/tmp/Launcher2.apk",
+		    "busybox mv /data/local/tmp/Launcher2.apk /system/app/Launcher2.apk",
+		    "rosystem"
+		};
+		sendshell(commands, false, "Downloading and installing stock Launcher2...");
+	    } else {
+		String[] commands = {
+		    "pm uninstall com.android.launcher"
+		};
+		sendshell(commands, false, "Removing stock Launcher2...");
 	    }
 	}
 	// always let the preference setting proceed.

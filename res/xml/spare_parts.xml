@@ -18,7 +18,6 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-<!-- LeoFroyo -->
 <PreferenceCategory
    android:title="LeoFroYo">
 
@@ -216,6 +215,12 @@
        android:summaryOff="Trackball Alert not installed" />
 
     <CheckBoxPreference
+       android:key="player"
+       android:title="DivX/XviD player"
+       android:summaryOn="RockDivxPlayer installed"
+       android:summaryOff="RockDivxPlayer not installed" />
+
+    <CheckBoxPreference
        android:key="remvol"
        android:title="Headset volume ctrl."
        android:summaryOn="Remvol installed"
@@ -245,10 +250,45 @@
        android:summaryOn="NetMeter+LED installed"
        android:summaryOff="NetMeter+LED not installed" />
 
+    <CheckBoxPreference
+       android:key="launcher2"
+       android:title="Restore Launcher2"
+       android:summaryOn="Launcher2 installed"
+       android:summaryOff="Launcher2 not installed" />
+
+  </PreferenceScreen>
+
+  <PreferenceScreen
+     android:title="About"
+     android:summary="About this Modded SpareParts">
+
+    <PreferenceScreen
+       android:key="about_version"
+       android:title="Version"
+       android:summary=" Modded SpareParts v4 for LeoFroYo 0.5.x">
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:key="about_author"
+       android:title="Author"
+       android:summary=" leonnib4 @ xda-developers.com">
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:key="about_donate"
+       android:title="Donate"
+       android:summary=" Donate via PayPal">
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:key="about_sources"
+       android:title="Sources"
+       android:summary=" http://github.com/leonnib4/">
+    </PreferenceScreen>
+
   </PreferenceScreen>
 
 </PreferenceCategory>
-<!-- /LeoFroyo -->
 
 <!-- from Enomther -->
 <PreferenceCategory

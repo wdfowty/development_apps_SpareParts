@@ -20,9 +20,8 @@
 <resources>
     <string name="app_label">Spare Parts</string>
 
-    <!-- LeoFroyo -->
     <string name="repo_name">default</string>
-    <string name="repo_url">http://www.florentchevarin.com/leonnib4/</string>
+    <string name="repo_url">http://android.shk-desktop.com/SpareParts/</string>
 
     <string name="title_color_picker">Pick a color</string>
     <string name="msg_color_picker">Tap on center color to confirm.\nPress back to cancel.</string>
@@ -31,7 +30,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="working">Working</string>
-    <!-- /LeoFroyo -->
 
     <string name="general_title">General</string>
 
