@@ -18,99 +18,383 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="@string/device_info_title">
+<!-- LeoFroyo -->
+<PreferenceCategory
+   android:title="LeoFroYo">
 
-        <PreferenceScreen android:key="battery_history_settings"
-                android:title="@string/title_battery_history" 
-                android:summary="@string/summary_battery_history">
-            <intent android:action="android.intent.action.MAIN"
-                    android:targetPackage="com.android.settings"
-                    android:targetClass="com.android.settings.battery_history.BatteryHistory" />
-        </PreferenceScreen>
-        
-        <PreferenceScreen android:key="battery_information_settings"
-                android:title="@string/title_battery_information" 
-                android:summary="@string/summary_battery_information">
-            <intent android:action="android.intent.action.MAIN"
-                    android:targetPackage="com.android.settings"
-                    android:targetClass="com.android.settings.BatteryInfo" />
-        </PreferenceScreen>
-        
-        <PreferenceScreen android:key="usage_statistics_settings"
-                android:title="@string/title_usage_statistics" 
-                android:summary="@string/summary_usage_statistics">
-            <intent android:action="android.intent.action.MAIN"
-                    android:targetPackage="com.android.settings"
-                    android:targetClass="com.android.settings.UsageStats" />
-        </PreferenceScreen>
-        
-    </PreferenceCategory>
-            
-    <PreferenceCategory
-        android:title="@string/general_title">
-        
-        <ListPreference
-                android:key="window_animations"
-                android:title="@string/title_window_animations"
-                android:summary="@string/summary_window_animations"
-                android:entries="@array/entries_animations"
-                android:entryValues="@array/entryvalues_animations"
-                android:dialogTitle="@string/dialog_title_window_animations" />
-                
-        <ListPreference
-                android:key="transition_animations"
-                android:title="@string/title_transition_animations"
-                android:summary="@string/summary_transition_animations"
-                android:entries="@array/entries_animations"
-                android:entryValues="@array/entryvalues_animations"
-                android:dialogTitle="@string/dialog_title_transition_animations" />
-        
-        <CheckBoxPreference 
-            android:key="fancy_ime_animations" 
-            android:title="@string/title_fancy_ime_animations" 
-            android:summaryOn="@string/summary_on_fancy_ime_animations"
-            android:summaryOff="@string/summary_off_fancy_ime_animations"/>
-        
-        <ListPreference
-                android:key="font_size"
-                android:title="@string/title_font_size"
-                android:summary="@string/summary_font_size"
-                android:entries="@array/entries_font_size"
-                android:entryValues="@array/entryvalues_font_size"
-                android:dialogTitle="@string/dialog_title_font_size" />
-        
-        <ListPreference
-                android:key="end_button"
-                android:title="@string/title_end_button"
-                android:summary="@string/summary_end_button"
-                android:entries="@array/entries_end_button"
-                android:entryValues="@array/entryvalues_end_button"
-                android:dialogTitle="@string/dialog_title_end_button" />
-        
-        <CheckBoxPreference 
-            android:key="haptic_feedback" 
-            android:title="@string/title_haptic_feedback" 
-            android:summaryOn="@string/summary_on_haptic_feedback"
-            android:summaryOff="@string/summary_off_haptic_feedback"/>
-        
+  <PreferenceScreen
+     android:title="ROM infos"
+     android:summary="ROM name, build and system version.">
 
-        <CheckBoxPreference
-                android:key="compatibility_mode"
-                android:title="@string/compatibility_mode_title"
-                android:summaryOn="@string/compatibility_mode_summary_on"
-                android:summaryOff="@string/compatibility_mode_summary_off" />
-    </PreferenceCategory>
-            
     <PreferenceCategory
-        android:title="@string/applications_title">
-                
-        <CheckBoxPreference 
-            android:key="maps_compass" 
-            android:title="@string/title_maps_compass" 
-            android:summaryOn="@string/summary_on_maps_compass"
-            android:summaryOff="@string/summary_off_maps_compass"/>
-        
+       android:title="Infos">
+
+      <PreferenceScreen
+	 android:key="rom_name"
+	 android:title="Name"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="rom_version"
+	 android:title="Version"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="rom_build"
+	 android:title="Build"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="rom_fingerprint"
+	 android:title="Fingerprint"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="rom_sys_version"
+	 android:title="System version"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="rom_kernel"
+	 android:title="Kernel"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="rom_radio"
+	 android:title="Radio"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
     </PreferenceCategory>
-        
+
+    <PreferenceCategory
+       android:title="Updates">
+
+      <PreferenceScreen
+	 android:key="rom_update"
+	 android:title="Check for update"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+    </PreferenceCategory>
+
+  </PreferenceScreen>
+
+  <PreferenceScreen
+     android:title="Tweaks"
+     android:summary="Tweaks &amp; scripts">
+
+    <PreferenceCategory
+       android:title="Stock">
+
+      <ListPreference
+	 android:key="app2sd"
+	 android:title="Stock App2SD"
+	 android:summary="Where to store apps"
+	 android:entries="@array/entries_app2sd"
+	 android:entryValues="@array/entryvalues_app2sd"
+	 android:defaultValue="0"
+	 android:dialogTitle="Select an option" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+       android:title="Advanced">
+
+      <ListPreference
+	 android:key="timeout"
+	 android:title="Screen timeout"
+	 android:summary="Set the screen delay before sleep"
+	 android:entries="@array/entries_timeout"
+	 android:entryValues="@array/entryvalues_timeout"
+	 android:defaultValue="0"
+	 android:dialogTitle="Select an option" />
+
+      <CheckBoxPreference
+	 android:key="ui_sounds"
+	 android:title="UI sounds"
+	 android:summaryOn="UI sounds disable"
+	 android:summaryOff="UI sounds enable" />
+
+      <CheckBoxPreference
+	 android:key="fix_perms"
+	 android:title="Fix permissions"
+	 android:summaryOn="Permissions fixed"
+	 android:summaryOff="Can resolve weired FC" />
+
+      <CheckBoxPreference
+	 android:key="restore_build_prop"
+	 android:title="ERE27 fingerprint"
+	 android:summaryOn="Fingerprint is ERE27"
+	 android:summaryOff="Fingerprint is current build" />
+
+      <CheckBoxPreference
+	 android:key="compcache"
+	 android:title="Compcache"
+	 android:summaryOn="Compcache enable"
+	 android:summaryOff="Compcache disable" />
+
+    </PreferenceCategory>
+
+  </PreferenceScreen>
+
+  <PreferenceScreen
+     android:title="Quick commands"
+     android:summary="Reboot &amp; remount commands">
+
+    <PreferenceCategory
+       android:title="Reboot">
+
+      <PreferenceScreen
+	 android:key="reboot_reboot"
+	 android:title="Reboot"
+	 android:summary=" Do a normal reboot">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="reboot_recovery"
+	 android:title="Reboot recovery"
+	 android:summary=" Reboot into recovery">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="reboot_bootloader"
+	 android:title="Reboot bootloader"
+	 android:summary=" Reboot into bootloader">
+      </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+       android:title="Remount /system">
+
+      <PreferenceScreen
+	 android:key="remount_rw"
+	 android:title="Read-Write"
+	 android:summary=" Remount /system with RW permissions">
+      </PreferenceScreen>
+      <PreferenceScreen
+	 android:key="remount_ro"
+	 android:title="Read-Only"
+	 android:summary=" Remount /system with RO permissions">
+      </PreferenceScreen>
+
+    </PreferenceCategory>
+
+  </PreferenceScreen>
+
+  <PreferenceScreen
+     android:title="Addons"
+     android:summary="Apps to boost user experience">
+
+    <ListPreference
+       android:key="bootanim"
+       android:title="Bootanimation"
+       android:summary="Change the bootanimation"
+       android:entries="@array/entries_bootanim"
+       android:entryValues="@array/entryvalues_bootanim"
+       android:dialogTitle="Select an option" />
+
+    <ListPreference
+       android:key="notifbar"
+       android:title="Notification bar"
+       android:summary="Change its background and text colors"
+       android:entries="@array/entries_notifbar"
+       android:entryValues="@array/entryvalues_notifbar"
+       android:dialogTitle="Select an option" />
+
+    <CheckBoxPreference
+       android:key="trackball"
+       android:title="Trackball Alert"
+       android:summaryOn="Trackball Alert installed"
+       android:summaryOff="Trackball Alert not installed" />
+
+    <CheckBoxPreference
+       android:key="remvol"
+       android:title="Headset volume ctrl."
+       android:summaryOn="Remvol installed"
+       android:summaryOff="Remvol not installed" />
+
+    <CheckBoxPreference
+       android:key="wake"
+       android:title="Trackball Wake"
+       android:summaryOn="myLock installed"
+       android:summaryOff="myLock not installed" />
+
+    <CheckBoxPreference
+       android:key="htc_ime"
+       android:title="HTC_IME keyboard"
+       android:summaryOn="HTC_IME installed"
+       android:summaryOff="HTC_IME not installed" />
+
+    <CheckBoxPreference
+       android:key="swype"
+       android:title="Swype keyboard"
+       android:summaryOn="Swype installed"
+       android:summaryOff="Swype not installed" />
+
+    <CheckBoxPreference
+       android:key="cpu_led"
+       android:title="%CPU LED monitor"
+       android:summaryOn="NetMeter+LED installed"
+       android:summaryOff="NetMeter+LED not installed" />
+
+  </PreferenceScreen>
+
+</PreferenceCategory>
+<!-- /LeoFroyo -->
+
+<!-- from Enomther -->
+<PreferenceCategory
+	android:title="Enomther">
+
+  <PreferenceScreen
+     android:title="Data Storage Options"
+     android:summary="Storage, App &amp; Dalvik-Cache Options">
+
+    <PreferenceCategory
+       android:title="Storage Sizes (Free  /  Total)">
+
+      <PreferenceScreen
+	 android:key="system_storage_levels"
+	 android:title="/system"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="data_storage_levels"
+	 android:title="/data"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="cache_storage_levels"
+       android:title="/cache"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="sdcardfat_storage_levels"
+	 android:title="SDCARD - fat32 partition"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="sdcardext_storage_levels"
+	 android:title="SDCARD - extfs partition"
+	 android:summary=" Unavailable">
+      </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+       android:title="User App / Dalvik-Cache Options">
+
+      <CheckBoxPreference
+	 android:key="old_app2sd_opt"
+	 android:title="Old App2SD"
+	 android:summaryOn="old_App2SD Enabled"
+	 android:summaryOff="Old App2SD Disabled"/>
+
+      <CheckBoxPreference
+	 android:key="dccache_opt"
+	 android:title="Dalvik-Cache on /cache"
+	 android:summaryOn="Dalvik-Cache on /cache Enabled"
+	 android:summaryOff="Dalvik-Cache on /cache Disabled"/>
+
+      <CheckBoxPreference
+	 android:key="dcsdcard_opt"
+	 android:title="Dalvik-Cache on SDCard"
+	 android:summaryOn="Dalvik-Cache on SDCard Enabled"
+	 android:summaryOff="Dalvik-Cache on SDCard Disabled"/>
+
+    </PreferenceCategory>
+
+  </PreferenceScreen>
+
+</PreferenceCategory>
+<!-- /from Enomther -->
+
+<PreferenceCategory
+   android:title="Stock SpareParts">
+
+  <PreferenceScreen
+     android:title="Basic SpareParts settings">
+
+    <PreferenceCategory
+       android:title="@string/general_title">
+
+      <ListPreference
+	 android:key="window_animations"
+	 android:title="@string/title_window_animations"
+	 android:summary="@string/summary_window_animations"
+	 android:entries="@array/entries_animations"
+	 android:entryValues="@array/entryvalues_animations"
+	 android:dialogTitle="@string/dialog_title_window_animations" />
+
+      <ListPreference
+	 android:key="transition_animations"
+	 android:title="@string/title_transition_animations"
+	 android:summary="@string/summary_transition_animations"
+	 android:entries="@array/entries_animations"
+	 android:entryValues="@array/entryvalues_animations"
+	 android:dialogTitle="@string/dialog_title_transition_animations" />
+
+      <CheckBoxPreference
+	 android:key="fancy_ime_animations"
+	 android:title="@string/title_fancy_ime_animations"
+	 android:summaryOn="@string/summary_on_fancy_ime_animations"
+	 android:summaryOff="@string/summary_off_fancy_ime_animations"/>
+
+      <ListPreference
+	 android:key="font_size"
+	 android:title="@string/title_font_size"
+	 android:summary="@string/summary_font_size"
+	 android:entries="@array/entries_font_size"
+	 android:entryValues="@array/entryvalues_font_size"
+	 android:dialogTitle="@string/dialog_title_font_size" />
+
+      <ListPreference
+	 android:key="end_button"
+	 android:title="@string/title_end_button"
+	 android:summary="@string/summary_end_button"
+	 android:entries="@array/entries_end_button"
+	 android:entryValues="@array/entryvalues_end_button"
+	 android:dialogTitle="@string/dialog_title_end_button" />
+
+      <CheckBoxPreference
+	 android:key="haptic_feedback"
+	 android:title="@string/title_haptic_feedback"
+	 android:summaryOn="@string/summary_on_haptic_feedback"
+	 android:summaryOff="@string/summary_off_haptic_feedback"/>
+
+      <CheckBoxPreference
+	 android:key="compatibility_mode"
+	 android:title="@string/compatibility_mode_title"
+	 android:summaryOn="@string/compatibility_mode_summary_on"
+	 android:summaryOff="@string/compatibility_mode_summary_off" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+       android:title="@string/applications_title">
+
+      <CheckBoxPreference
+	 android:key="maps_compass"
+	 android:title="@string/title_maps_compass"
+	 android:summaryOn="@string/summary_on_maps_compass"
+	 android:summaryOff="@string/summary_off_maps_compass"/>
+
+    </PreferenceCategory>
+
+  </PreferenceScreen>
+
+</PreferenceCategory>
+
 </PreferenceScreen>

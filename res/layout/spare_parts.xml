@@ -21,7 +21,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <RelativeLayout 
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
@@ -44,7 +44,7 @@
             android:layout_below="@+id/transition_animation_scale"
             android:layout_alignParentLeft="true"
             android:text="@string/development_settings_show_maps_compass_text" />
-            
+
     </RelativeLayout>
 
 </ScrollView>
