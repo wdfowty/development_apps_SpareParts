@@ -107,8 +107,6 @@ public class SpareParts extends PreferenceActivity
     private static final String TIMEOUT_PREF = "timeout";
     private static final String UI_SOUNDS_PREF = "ui_sounds";
     private static final String FIX_PERMS_PREF = "fix_perms";
-    private static final String BUILD_PROP_PREF = "restore_build_prop";
-    private static final String COMPCACHE_PREF = "compcache";
 
     private static final String REBOOT_PREF = "reboot_reboot";
     private static final String RECOVERY_PREF = "reboot_recovery";
@@ -119,13 +117,12 @@ public class SpareParts extends PreferenceActivity
     private static final String BOOTANIM_PREF = "bootanim";
     private static final String NOTIFBAR_PREF = "notifbar";
     private static final String TRACKBALL_PREF = "trackball";
-    private static final String PLAYER_PREF = "player";
     private static final String REMVOL_PREF = "remvol";
     private static final String WAKE_PREF = "wake";
     private static final String HTC_IME_PREF = "htc_ime";
-    private static final String SWYPE_PREF = "swype";
     private static final String CPU_LED_PREF = "cpu_led";
     private static final String LAUNCHER2_PREF = "launcher2";
+    private static final String GALAXY_LWP_PREF = "galaxy_lwp";
 
     private static final String SYSTEM_PART_SIZE = "system_storage_levels";
     private static final String SYSTEM_STORAGE_PATH = "/system";
@@ -162,8 +159,6 @@ public class SpareParts extends PreferenceActivity
     private ListPreference mTimeoutPref;
     private CheckBoxPreference mUiSoundsPref;
     private CheckBoxPreference mFixPermsPref;
-    private CheckBoxPreference mBuildPropPref;
-    private CheckBoxPreference mCompcachePref;
 
     private Preference mRebootPref;
     private Preference mBootloaderPref;
@@ -175,12 +170,11 @@ public class SpareParts extends PreferenceActivity
     private ListPreference mNotifbarPref;
     private CheckBoxPreference mTrackballPref;
     private CheckBoxPreference mRemvolPref;
-    private CheckBoxPreference mPlayerPref;
     private CheckBoxPreference mWakePref;
     private CheckBoxPreference mHtcImePref;
-    private CheckBoxPreference mSwypePref;
     private CheckBoxPreference mCpuLedPref;
     private CheckBoxPreference mLauncher2Pref;
+    private CheckBoxPreference mGalaxyLWPPref;
 
     private Preference mSystemSize;
     private Preference mDataSize;
@@ -217,7 +211,7 @@ public class SpareParts extends PreferenceActivity
 	REPO = getResources().getString(R.string.repo_url);
 
 	String build = Build.DISPLAY;
-	String rom_name = build.substring(0, build.indexOf('-'));
+	String rom_name = build.substring(0, build.indexOf('_'));
 
 	// To avoid "stupid" copies
 	if (!rom_name.equals("LeoFroYo")) // You should put the name of your ROM here
@@ -226,8 +220,8 @@ public class SpareParts extends PreferenceActivity
 		  + "If you're using another ROM, you should get my sources and edit it.");
 
 	setStringSummary(ROM_NAME_PREF, rom_name);
-	setStringSummary(ROM_VERSION_PREF, build.substring(build.indexOf('-') + 1));
-	setStringSummary(ROM_BUILD_PREF, Build.ID + " " + (fileExists("/system/framework/framework-res.odex") ? "odex" : "deodex"));
+	setStringSummary(ROM_VERSION_PREF, build.substring(build.indexOf('_') + 1));
+	setStringSummary(ROM_BUILD_PREF, Build.ID + " " + (fileExists("/system/framework/framework.odex") ? "odex" : "deodex"));
 	setStringSummary(ROM_FINGERPRINT_PREF, getFormattedFingerprint());
 	String radio = getSystemValue("gsm.version.baseband");
 	setStringSummary(ROM_RADIO_PREF, radio.substring(radio.indexOf('_') + 1, radio.length()));
@@ -262,11 +256,6 @@ public class SpareParts extends PreferenceActivity
 	mUiSoundsPref.setOnPreferenceChangeListener(this);
 	mFixPermsPref = (CheckBoxPreference) prefSet.findPreference(FIX_PERMS_PREF);
 	mFixPermsPref.setOnPreferenceChangeListener(this);
-	mBuildPropPref = (CheckBoxPreference) prefSet.findPreference(BUILD_PROP_PREF);
-	mBuildPropPref.setOnPreferenceChangeListener(this);
-	mCompcachePref = (CheckBoxPreference) prefSet.findPreference(COMPCACHE_PREF);
-	mCompcachePref.setOnPreferenceChangeListener(this);
-	mCompcachePref.setEnabled(false);
 
 	mRebootPref = (Preference) prefSet.findPreference(REBOOT_PREF);
 	findPreference(REBOOT_PREF)
@@ -328,22 +317,22 @@ public class SpareParts extends PreferenceActivity
 	mBootanimPref.setOnPreferenceChangeListener(this);
 	mNotifbarPref = (ListPreference) prefSet.findPreference(NOTIFBAR_PREF);
 	mNotifbarPref.setOnPreferenceChangeListener(this);
+	mNotifbarPref.setEnabled(false);
 	mTrackballPref = (CheckBoxPreference) prefSet.findPreference(TRACKBALL_PREF);
 	mTrackballPref.setOnPreferenceChangeListener(this);
-	mPlayerPref = (CheckBoxPreference) prefSet.findPreference(PLAYER_PREF);
-	mPlayerPref.setOnPreferenceChangeListener(this);
+	mNotifbarPref.setEnabled(false);
 	mRemvolPref = (CheckBoxPreference) prefSet.findPreference(REMVOL_PREF);
 	mRemvolPref.setOnPreferenceChangeListener(this);
 	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
 	mWakePref.setOnPreferenceChangeListener(this);
 	mHtcImePref = (CheckBoxPreference) prefSet.findPreference(HTC_IME_PREF);
 	mHtcImePref.setOnPreferenceChangeListener(this);
-	mSwypePref= (CheckBoxPreference) prefSet.findPreference(SWYPE_PREF);
-	mSwypePref.setOnPreferenceChangeListener(this);
 	mCpuLedPref = (CheckBoxPreference) prefSet.findPreference(CPU_LED_PREF);
 	mCpuLedPref.setOnPreferenceChangeListener(this);
 	mLauncher2Pref = (CheckBoxPreference) prefSet.findPreference(LAUNCHER2_PREF);
 	mLauncher2Pref.setOnPreferenceChangeListener(this);
+	mGalaxyLWPPref = (CheckBoxPreference) prefSet.findPreference(GALAXY_LWP_PREF);
+	mGalaxyLWPPref.setOnPreferenceChangeListener(this);
 
 	mOldApp2sdPref = (CheckBoxPreference) prefSet.findPreference(OLD_APP2SD_PREF);
 	mOldApp2sdPref.setOnPreferenceChangeListener(this);
@@ -416,8 +405,13 @@ public class SpareParts extends PreferenceActivity
 	    mUiSoundsPref.setChecked(true);
 	else
 	    mUiSoundsPref.setChecked(false);
-	mFixPermsPref.setChecked(false);
 
+	if (fileExists("/system/app/Launcher2.apk"))
+	    mLauncher2Pref.setChecked(true);
+	else
+	    mLauncher2Pref.setChecked(true);
+
+	mFixPermsPref.setChecked(false);
 	mBootanimPref.setDefaultValue(0);
 	mNotifbarPref.setDefaultValue(1);
 
@@ -513,26 +507,6 @@ public class SpareParts extends PreferenceActivity
 	    sendshell(commands, false, "Fixing permissions...");
 	    return false;
 	}
-	else if (preference == mBuildPropPref) {
-	    boolean have = mBuildPropPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "rwsystem",
-		    "busybox sed -i 's/2.2 FRF50 38042/2.1-update1 ERE27 24178/g' /system/build.prop",
-		    "rowsystem"
-		};
-		sendshell(commands, true, "Restoring ERE27...");
-	    } else {
-		String[] commands = {
-		    "rwsystem",
-		    "busybox sed -i 's/2.1-update1 ERE27 24178/2.2 FRF50 38042/g' /system/build.prop",
-		    "rowsystem"
-		};
-		sendshell(commands, true, "Restoring FRF50...");
-	    }
-	}
-	else if (preference == mCompcachePref) {
-	}
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
 		"rwsystem",
@@ -546,6 +520,8 @@ public class SpareParts extends PreferenceActivity
 	    if (objValue.toString().equals("0")) {
 		String[] commands = {
 		    "rwsystem",
+		    "wget -q " + REPO + "blackonwhite-framework.jar -O /data/local/tmp/framework.jar",
+		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
 		    "wget -q " + REPO + "blackonwhite-services.jar -O /data/local/tmp/services.jar",
 		    "busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
 		    "wget -q " + REPO + "whitebg-framework-res.apk -O /data/local/tmp/framework-res.apk",
@@ -556,6 +532,8 @@ public class SpareParts extends PreferenceActivity
 	    } else if (objValue.toString().equals("1")) {
 		String[] commands = {
 		    "rwsystem",
+		    "wget -q " + REPO + "whiteonblack-framework.jar -O /data/local/tmp/framework.jar",
+		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
 		    "wget -q " + REPO + "whiteonblack-services.jar -O /data/local/tmp/services.jar",
 		    "busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
 		    "wget -q " + REPO + "blackbg-framework-res.apk -O /data/local/tmp/framework-res.apk",
@@ -569,10 +547,10 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mTrackballPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "rwsystem",
-		    "wget -q " + REPO + "framework.jar -O /data/local/tmp/framework.jar",
-		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
-		    "rosystem",
+		    // "rwsystem",
+		    // "wget -q " + REPO + "framework.jar -O /data/local/tmp/framework.jar",
+		    // "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
+		    // "rosystem",
 		    "wget -q " + REPO + "trackball.apk -O /data/local/tmp/trackball.apk",
 		    "pm install -r /data/local/tmp/trackball.apk"
 		};
@@ -582,21 +560,6 @@ public class SpareParts extends PreferenceActivity
 		    "pm uninstall uk.co.lilhermit.android.TrackballAlert"
 		};
 		sendshell(commands, false, "Removing Trackball Alert...");
-	    }
-	}
-	else if (preference == mPlayerPref) {
-	    boolean have = mPlayerPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "wget -q " + REPO + "player.apk -O /data/local/tmp/player.apk",
-		    "pm install -r /data/local/tmp/player.apk"
-		};
-		sendshell(commands, false, "Downloading and installing RockDivxPlayer...");
-	    } else {
-		String[] commands = {
-		    "pm uninstall org.freecoder.android.cmplayer"
-		};
-		sendshell(commands, false, "Removing RockDivxPlayer...");
 	    }
 	}
 	else if (preference == mRemvolPref) {
@@ -651,21 +614,6 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, false, "Removing HTC_IME...");
 	    }
 	}
-	else if (preference == mSwypePref) {
-	    boolean have = mSwypePref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "wget -q " + REPO + "swype.apk -O /data/local/tmp/swype.apk",
-		    "pm install -r /data/local/tmp/swype.apk"
-		};
-		sendshell(commands, false, "Downloading and installing Swype...");
-	    } else {
-		String[] commands = {
-		    "pm uninstall com.swype.android.inputmethod"
-		};
-		sendshell(commands, false, "Removing Swype...");
-	    }
-	}
 	else if (preference == mCpuLedPref) {
 	    boolean have = mCpuLedPref.isChecked();
 	    if (!have) {
@@ -693,11 +641,45 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, false, "Downloading and installing stock Launcher2...");
 	    } else {
 		String[] commands = {
-		    "pm uninstall com.android.launcher"
+		    "rwsystem",
+		    "busybox rm /system/app/Launcher2.apk",
+		    "rosystem"
 		};
 		sendshell(commands, false, "Removing stock Launcher2...");
 	    }
 	}
+	else if (preference == mGalaxyLWPPref) {
+	    boolean have = mGalaxyLWPPref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "rwsystem",
+		    "wget -q " + REPO + "libmnglw-0.8.2.so -O /data/local/tmp/libmnglw-0.8.2.so",
+		    "busybox mv /data/local/tmp/libmnglw-0.8.2.so /system/lib/libmnglw-0.8.2.so",
+		    "rosystem",
+		    "wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk",
+		    "pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk",
+		    "wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk",
+		    "pm install -r /data/local/tmp/TATLiveWallpapersBlueSea.apk",
+		    "wget -q " + REPO + "TATLiveWallpapersDandelion.apk -O /data/local/tmp/TATLiveWallpapersDandelion.apk",
+		    "pm install -r /data/local/tmp/TATLiveWallpapersDandelion.apk",
+		    "wget -q " + REPO + "TATLiveWallpapersOceanWave.apk -O /data/local/tmp/TATLiveWallpapersOceanWave.apk",
+		    "pm install -r /data/local/tmp/TATLiveWallpapersOceanWave.apk"
+		};
+		sendshell(commands, true, "Downloading and installing Galaxy LWPs...");
+	    } else {
+		String[] commands = {
+		    "rwsystem",
+		    "busybox rm /system/lib/libmnglw-0.8.2.so",
+		    "rosystem",
+		    "pm uninstall ",
+		    "pm uninstall ",
+		    "pm uninstall "
+		    // "pm uninstall "
+		};
+		sendshell(commands, false, "Removing Galaxy LWPs...");
+	    }
+	}
+
 	// always let the preference setting proceed.
 	return true;
     }

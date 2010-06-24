@@ -127,18 +127,6 @@
 	 android:summaryOn="Permissions fixed"
 	 android:summaryOff="Can resolve weired FC" />
 
-      <CheckBoxPreference
-	 android:key="restore_build_prop"
-	 android:title="ERE27 fingerprint"
-	 android:summaryOn="Fingerprint is ERE27"
-	 android:summaryOff="Fingerprint is current build" />
-
-      <CheckBoxPreference
-	 android:key="compcache"
-	 android:title="Compcache"
-	 android:summaryOn="Compcache enable"
-	 android:summaryOff="Compcache disable" />
-
     </PreferenceCategory>
 
   </PreferenceScreen>
@@ -215,12 +203,6 @@
        android:summaryOff="Trackball Alert not installed" />
 
     <CheckBoxPreference
-       android:key="player"
-       android:title="DivX/XviD player"
-       android:summaryOn="RockDivxPlayer installed"
-       android:summaryOff="RockDivxPlayer not installed" />
-
-    <CheckBoxPreference
        android:key="remvol"
        android:title="Headset volume ctrl."
        android:summaryOn="Remvol installed"
@@ -239,12 +221,6 @@
        android:summaryOff="HTC_IME not installed" />
 
     <CheckBoxPreference
-       android:key="swype"
-       android:title="Swype keyboard"
-       android:summaryOn="Swype installed"
-       android:summaryOff="Swype not installed" />
-
-    <CheckBoxPreference
        android:key="cpu_led"
        android:title="%CPU LED monitor"
        android:summaryOn="NetMeter+LED installed"
@@ -256,6 +232,12 @@
        android:summaryOn="Launcher2 installed"
        android:summaryOff="Launcher2 not installed" />
 
+    <CheckBoxPreference
+       android:key="galaxy_lwp"
+       android:title="Samsung Galaxy LWPs"
+       android:summaryOn="Galaxy LWPs installed"
+       android:summaryOff="Galaxy LWPs not installed" />
+
   </PreferenceScreen>
 
   <PreferenceScreen
@@ -265,7 +247,7 @@
     <PreferenceScreen
        android:key="about_version"
        android:title="Version"
-       android:summary=" Modded SpareParts v4 for LeoFroYo 0.5.x">
+       android:summary=" Modded SpareParts v5 for FroYo-based ROMS">
     </PreferenceScreen>
 
     <PreferenceScreen
