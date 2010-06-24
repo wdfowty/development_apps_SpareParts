@@ -295,7 +295,7 @@ public class SpareParts extends PreferenceActivity
 	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
 		    public boolean onPreferenceClick(Preference preference) {
 			String[] commands = {
-			    "rosystem"
+			    "mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system"
 			};
 			sendshell(commands, false, "Remounting...");
 			return true;
@@ -306,7 +306,7 @@ public class SpareParts extends PreferenceActivity
 	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
 		    public boolean onPreferenceClick(Preference preference) {
 			String[] commands = {
-			    "rwsystem"
+			    "mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system"
 			};
 			sendshell(commands, false, "Remounting...");
 			return true;
@@ -405,7 +405,6 @@ public class SpareParts extends PreferenceActivity
 	    mUiSoundsPref.setChecked(true);
 	else
 	    mUiSoundsPref.setChecked(false);
-
 	if (fileExists("/system/app/Launcher2.apk"))
 	    mLauncher2Pref.setChecked(true);
 	else
@@ -421,6 +420,8 @@ public class SpareParts extends PreferenceActivity
 	    // mSDCardEXTSize.setEnabled(false);
 	    // mSDCardEXTSize.setSummary("no extfs partition");
 	}
+	if (!fileExists("/system/xbin/nouisounds"))
+	    mUiSoundsPref.setEnabled(false);
 
 	patience.dismiss();
 
