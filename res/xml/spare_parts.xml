@@ -168,6 +168,42 @@
   </PreferenceScreen>
 
   <PreferenceScreen
+     android:title="Stock apps"
+     android:summary="Stock apps that you can add/remove">
+
+    <CheckBoxPreference
+       android:key="car_home"
+       android:title="Car Home"
+       android:summaryOn="car Home installed"
+       android:summaryOff="Car Home not installed" />
+
+    <CheckBoxPreference
+       android:key="email"
+       android:title="Email"
+       android:summaryOn="Email installed"
+       android:summaryOff="Email not installed" />
+
+    <CheckBoxPreference
+       android:key="facebook"
+       android:title="Facebook"
+       android:summaryOn="Facebook installed"
+       android:summaryOff="Facebook not installed" />
+
+    <CheckBoxPreference
+       android:key="twitter"
+       android:title="Twitter"
+       android:summaryOn="Twitter installed"
+       android:summaryOff="Twitter not installed" />
+
+    <CheckBoxPreference
+       android:key="youtube"
+       android:title="Youtube"
+       android:summaryOn="Youtube installed"
+       android:summaryOff="Youtube not installed" />
+
+  </PreferenceScreen>
+
+  <PreferenceScreen
      android:title="Addons"
      android:summary="Apps to boost user experience">
 

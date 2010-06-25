@@ -52,7 +52,6 @@ import android.util.Log;
 import android.view.IWindowManager;
 
 import java.util.List;
-//import java.util.Formatter;
 import android.text.format.Formatter;
 import android.net.Uri;
 import java.util.regex.Pattern;
@@ -63,13 +62,14 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-//import java.net.URI;
 import java.net.URL;
 
 public class SpareParts extends PreferenceActivity
 	implements Preference.OnPreferenceChangeListener,
 	SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "SpareParts";
+    private static final String REMOUNT_RO = "mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system";
+    private static final String REMOUNT_RW = "mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system";
     private static String REPO;
 
     ProgressDialog patience = null;
@@ -101,6 +101,12 @@ public class SpareParts extends PreferenceActivity
     private static final String BOOTLOADER_PREF = "reboot_bootloader";
     private static final String REMOUNT_RW_PREF = "remount_rw";
     private static final String REMOUNT_RO_PREF = "remount_ro";
+
+    private static final String CAR_HOME_PREF = "car_home";
+    private static final String EMAIL_PREF = "email";
+    private static final String FACEBOOK_PREF = "facebook";
+    private static final String TWITTER_PREF = "twitter";
+    private static final String YOUTUBE_PREF = "youtube";
 
     private static final String BOOTANIM_PREF = "bootanim";
     private static final String NOTIFBAR_PREF = "notifbar";
@@ -156,6 +162,12 @@ public class SpareParts extends PreferenceActivity
     private Preference mRecoveryPref;
     private Preference mRemountRWPref;
     private Preference mRemountROPref;
+
+    private CheckBoxPreference mCarHomePref;
+    private CheckBoxPreference mEmailPref;
+    private CheckBoxPreference mFacebookPref;
+    private CheckBoxPreference mTwitterPref;
+    private CheckBoxPreference mYouTubePref;
 
     private ListPreference mBootanimPref;
     private ListPreference mNotifbarPref;
@@ -318,7 +330,7 @@ public class SpareParts extends PreferenceActivity
 	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
 		    public boolean onPreferenceClick(Preference preference) {
 			String[] commands = {
-			    "mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system"
+			    REMOUNT_RO,
 			};
 			sendshell(commands, false, "Remounting...");
 			return true;
@@ -329,12 +341,23 @@ public class SpareParts extends PreferenceActivity
 	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
 		    public boolean onPreferenceClick(Preference preference) {
 			String[] commands = {
-			    "mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system"
+			    REMOUNT_RW,
 			};
 			sendshell(commands, false, "Remounting...");
 			return true;
 		    }
 		});
+
+	mCarHomePref = (CheckBoxPreference) prefSet.findPreference(CAR_HOME_PREF);
+	mCarHomePref.setOnPreferenceChangeListener(this);
+	mEmailPref = (CheckBoxPreference) prefSet.findPreference(EMAIL_PREF);
+	mEmailPref.setOnPreferenceChangeListener(this);
+	mFacebookPref = (CheckBoxPreference) prefSet.findPreference(FACEBOOK_PREF);
+	mFacebookPref.setOnPreferenceChangeListener(this);
+	mTwitterPref = (CheckBoxPreference) prefSet.findPreference(TWITTER_PREF);
+	mTwitterPref.setOnPreferenceChangeListener(this);
+	mYouTubePref = (CheckBoxPreference) prefSet.findPreference(YOUTUBE_PREF);
+	mYouTubePref.setOnPreferenceChangeListener(this);
 
 	mBootanimPref = (ListPreference) prefSet.findPreference(BOOTANIM_PREF);
 	mBootanimPref.setOnPreferenceChangeListener(this);
@@ -426,29 +449,29 @@ public class SpareParts extends PreferenceActivity
 
 	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
 
-	if (fileExists("/system/media/audio/ui/.bak"))
-	    mUiSoundsPref.setChecked(true);
-	else
-	    mUiSoundsPref.setChecked(false);
-	if (fileExists("/system/app/Launcher2.apk"))
-	    mLauncher2Pref.setChecked(true);
-	else
-	    mLauncher2Pref.setChecked(true);
+	// Current
+	mUiSoundsPref.setChecked(fileExists("/system/media/audio/ui/.bak"));
+	mCarHomePref.setChecked(fileExists("/system/app/CarHomeGoogle.apk"));
+	mEmailPref.setChecked(fileExists("/system/app/EmailGoogle.apk"));
+	mFacebookPref.setChecked(fileExists("/system/app/Facebook.apk"));
+	mTwitterPref.setChecked(fileExists("/system/app/Twitter.apk"));
+	mYouTubePref.setChecked(fileExists("/system/app/YouTube.apk"));
+	mLauncher2Pref.setChecked(fileExists("/system/app/Launcher2.apk"));
 
+	// Defaults
 	mFixPermsPref.setChecked(false);
 	mBootanimPref.setDefaultValue(1);
 	mNotifbarPref.setDefaultValue(1);
 
+	// Enabled
 	if(!extfsIsMounted){
 	    mOldApp2sdPref.setEnabled(false);
 	    mDcSdcardPref.setEnabled(false);
-	    // mSDCardEXTSize.setEnabled(false);
-	    // mSDCardEXTSize.setSummary("no extfs partition");
+	    mSDCardEXTSize.setEnabled(false);
+	    mSDCardEXTSize.setSummary("no extfs partition");
 	}
-	if (!fileExists("/system/xbin/nouisounds"))
-	    mUiSoundsPref.setEnabled(false);
-	if (!fileExists("/system/xbin/fix_permissions"))
-	    mFixPermsPref.setEnabled(false);
+	mUiSoundsPref.setEnabled(fileExists("/system/xbin/nouisounds"));
+	mFixPermsPref.setEnabled(fileExists("/system/xbin/fix_permissions"));
 
 	if (!fileExists("/system/bin/busybox") && !fileExists("/system/xbin/busybox")) {
 	    popup("Full root requiered", "This SpareParts Mod NEEDS root, plus busybox installed!");
@@ -466,11 +489,11 @@ public class SpareParts extends PreferenceActivity
 
 	final PreferenceGroup parentPreference = getPreferenceScreen();
 	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
-		BATTERY_HISTORY_PREF, 0);
+						   BATTERY_HISTORY_PREF, 0);
 	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
-		BATTERY_INFORMATION_PREF, 0);
+						   BATTERY_INFORMATION_PREF, 0);
 	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
-		USAGE_STATISTICS_PREF, 0);
+						   USAGE_STATISTICS_PREF, 0);
 
 	parentPreference.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -558,38 +581,84 @@ public class SpareParts extends PreferenceActivity
 	    sendshell(commands, false, "Fixing permissions...");
 	    return false;
 	}
+	else if (preference == mCarHomePref) {
+	    String[] commands = {
+		REMOUNT_RW,
+		"rm /system/app/CarHomeGoogle.apk",
+		"rm /system/app/CarHomeLauncher.apk",
+		REMOUNT_RO,
+	    };
+	    sendshell(commands, false, "Removing Car Home...");
+	    return false;
+	}
+	else if (preference == mEmailPref) {
+	    String[] commands = {
+		REMOUNT_RW,
+		"rm /system/app/EmailGoogle.apk",
+		REMOUNT_RO,
+	    };
+	    sendshell(commands, false, "Removing Email...");
+	    return false;
+	}
+	else if (preference == mFacebookPref) {
+	    String[] commands = {
+		REMOUNT_RW,
+		"rm /system/app/Facebook.apk",
+		REMOUNT_RO,
+	    };
+	    sendshell(commands, false, "Removing Facebook...");
+	    return false;
+	}
+	else if (preference == mTwitterPref) {
+	    String[] commands = {
+		REMOUNT_RW,
+		"rm /system/app/Twitter.apk",
+		REMOUNT_RO,
+	    };
+	    sendshell(commands, false, "Removing Twitter...");
+	    return false;
+	}
+	else if (preference == mYouTubePref) {
+	    String[] commands = {
+		REMOUNT_RW,
+		"rm /system/app/YouTube.apk",
+		REMOUNT_RO,
+	    };
+	    sendshell(commands, false, "Removing YouTube...");
+	    return false;
+	}
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
-		"rwsystem",
+		REMOUNT_RW,
 		"busybox wget -q " + REPO + objValue.toString() + " -O /data/local/tmp/bootanimation.zip",
 		"busybox mv /data/local/tmp/bootanimation.zip /system/media/bootanimation.zip",
-		"rosystem"
+		REMOUNT_RO,
 	    };
 	    sendshell(commands, true, "Downloading and installing bootanimation...");
 	}
 	else if (preference == mNotifbarPref) {
 	    if (objValue.toString().equals("0")) {
 		String[] commands = {
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "blackonwhite-framework.jar -O /data/local/tmp/framework.jar",
 		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
 		    "busybox wget -q " + REPO + "blackonwhite-services.jar -O /data/local/tmp/services.jar",
 		    "busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
 		    "busybox wget -q " + REPO + "whitebg-framework-res.apk -O /data/local/tmp/framework-res.apk",
 		    "busybox mv /data/local/tmp/framework-res.apk /system/framework/framework-res.apk",
-		    "rosystem"
+		    REMOUNT_RO,
 		};
 		sendshell(commands, true, "Downloading and installing framework...");
 	    } else if (objValue.toString().equals("1")) {
 		String[] commands = {
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "whiteonblack-framework.jar -O /data/local/tmp/framework.jar",
 		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
 		    "busybox wget -q " + REPO + "whiteonblack-services.jar -O /data/local/tmp/services.jar",
 		    "busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
 		    "busybox wget -q " + REPO + "blackbg-framework-res.apk -O /data/local/tmp/framework-res.apk",
 		    "busybox mv /data/local/tmp/framework-res.apk /system/framework/framework-res.apk",
-		    "rosystem"
+		    REMOUNT_RO,
 		};
 		sendshell(commands, true, "Downloading and installing framework...");
 	    }
@@ -598,10 +667,10 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mTrackballPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    // "rwsystem",
+		    // REMOUNT_RW,
 		    // "busybox wget -q " + REPO + "framework.jar -O /data/local/tmp/framework.jar",
 		    // "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
-		    // "rosystem",
+		    // REMOUNT_RO,
 		    "busybox wget -q " + REPO + "trackball.apk -O /data/local/tmp/trackball.apk",
 		    "pm install -r /data/local/tmp/trackball.apk"
 		};
@@ -634,11 +703,11 @@ public class SpareParts extends PreferenceActivity
 		String[] commands = {
 		    "busybox wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk",
 		    "pm install -r /data/local/tmp/wake.apk",
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml",
 		    "busybox mkdir -p /data/data/i4nc4mp.myLock.froyo/shared_prefs",
 		    "busybox mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
-		    "rosystem"
+		    REMOUNT_RO,
 		};
 		sendshell(commands, false, "Downloading and installing myLock...");
 	    } else {
@@ -685,17 +754,17 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mLauncher2Pref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "Launcher2.apk -O /data/local/tmp/Launcher2.apk",
 		    "busybox mv /data/local/tmp/Launcher2.apk /system/app/Launcher2.apk",
-		    "rosystem"
+		    REMOUNT_RO,
 		};
 		sendshell(commands, false, "Downloading and installing stock Launcher2...");
 	    } else {
 		String[] commands = {
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox rm /system/app/Launcher2.apk",
-		    "rosystem"
+		    REMOUNT_RO,
 		};
 		sendshell(commands, false, "Removing stock Launcher2...");
 	    }
@@ -704,10 +773,10 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mGalaxyLWPPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "libmnglw-0.8.2.so -O /data/local/tmp/libmnglw-0.8.2.so",
 		    "busybox mv /data/local/tmp/libmnglw-0.8.2.so /system/lib/libmnglw-0.8.2.so",
-		    "rosystem",
+		    REMOUNT_RO,
 		    "busybox wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk",
 		    "pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk",
 		    "busybox wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk",
@@ -720,13 +789,13 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, true, "Downloading and installing Galaxy LWPs...");
 	    } else {
 		String[] commands = {
-		    "rwsystem",
+		    REMOUNT_RW,
 		    "busybox rm /system/lib/libmnglw-0.8.2.so",
-		    "rosystem",
+		    REMOUNT_RO,
+		    "pm uninstall ",
 		    "pm uninstall ",
 		    "pm uninstall ",
 		    "pm uninstall "
-		    // "pm uninstall "
 		};
 		sendshell(commands, false, "Removing Galaxy LWPs...");
 	    }
