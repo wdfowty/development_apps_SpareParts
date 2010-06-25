@@ -1,4 +1,4 @@
-/* //device/apps/Settings/src/com/android/settings/Keyguard.java
+6~/* //device/apps/Settings/src/com/android/settings/Keyguard.java
 **
 ** Copyright 2006, The Android Open Source Project
 **
@@ -205,9 +205,6 @@ public class SpareParts extends PreferenceActivity
 	super.onCreate(icicle);
 	addPreferencesFromResource(R.xml.spare_parts);
 
-	String version = Build.VERSION.RELEASE;
-	if (version == "2.2")
-	    bad("Bad Android", "This SpareParts Mod is meant to work with Android 2.2!");
 	if (!fileExists("/system/bin/su") && !fileExists("/system/xbin/su"))
 	    bad("Root requiered", "This SpareParts Mod NEEDS full root!");
 
@@ -228,7 +225,7 @@ public class SpareParts extends PreferenceActivity
 	setStringSummary(ROM_FINGERPRINT_PREF, getFormattedFingerprint());
 	String radio = getSystemValue("gsm.version.baseband");
 	setStringSummary(ROM_RADIO_PREF, radio.substring(radio.indexOf('_') + 1, radio.length()));
-	setStringSummary(ROM_SYS_VERSION_PREF, "Android " + version);
+	setStringSummary(ROM_SYS_VERSION_PREF, "Android " + Build.VERSION.RELEASE);
 	findPreference(ROM_KERNEL_PREF).setSummary(getFormattedKernelVersion());
 
 	mUpdatePref = (Preference) prefSet.findPreference(ROM_UPDATE_PREF);
