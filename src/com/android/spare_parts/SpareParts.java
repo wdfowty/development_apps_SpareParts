@@ -1,4 +1,4 @@
-6~/* //device/apps/Settings/src/com/android/settings/Keyguard.java
+/* //device/apps/Settings/src/com/android/settings/Keyguard.java
 **
 ** Copyright 2006, The Android Open Source Project
 **
