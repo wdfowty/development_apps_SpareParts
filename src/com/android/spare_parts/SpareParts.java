@@ -773,10 +773,6 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mGalaxyLWPPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    REMOUNT_RW,
-		    "busybox wget -q " + REPO + "libmnglw-0.8.2.so -O /data/local/tmp/libmnglw-0.8.2.so",
-		    "busybox mv /data/local/tmp/libmnglw-0.8.2.so /system/lib/libmnglw-0.8.2.so",
-		    REMOUNT_RO,
 		    "busybox wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk",
 		    "pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk",
 		    "busybox wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk",
@@ -789,9 +785,6 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, true, "Downloading and installing Galaxy LWPs...");
 	    } else {
 		String[] commands = {
-		    REMOUNT_RW,
-		    "busybox rm /system/lib/libmnglw-0.8.2.so",
-		    REMOUNT_RO,
 		    "pm uninstall ",
 		    "pm uninstall ",
 		    "pm uninstall ",
