@@ -600,6 +600,7 @@ public class SpareParts extends PreferenceActivity
 		    "pm install -r /data/local/tmp/wake.apk",
 		    "rwsystem",
 		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml",
+		    "busybox mkdir -p /data/data/i4nc4mp.myLock.froyo/shared_prefs",
 		    "busybox mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
 		    "rosystem"
 		};
