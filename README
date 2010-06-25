@@ -12,7 +12,6 @@ And some things I would (highly) prefer:
 
 HowTo use this code for your ROM:
 - change the repo name and URL in res/values/strings.xml
-- change the rom_name.equals() value in src/com/android/spare_parts/SpareParts.java
 
 Enjoy ;)
 
