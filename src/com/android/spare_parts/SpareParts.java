@@ -205,7 +205,8 @@ public class SpareParts extends PreferenceActivity
 	super.onCreate(icicle);
 	addPreferencesFromResource(R.xml.spare_parts);
 
-	patience = ProgressDialog.show(this, "Initializing", "Please wait...", true);
+	if (!fileExists("/system/bin/su") && !fileExists("/system/xbin/su"))
+	    bad("Root requiered", "This SpareParts Mod NEEDS full root!");
 
 	PreferenceScreen prefSet = getPreferenceScreen();
 	REPO = getResources().getString(R.string.repo_url);
@@ -410,7 +411,7 @@ public class SpareParts extends PreferenceActivity
 	    mLauncher2Pref.setChecked(true);
 
 	mFixPermsPref.setChecked(false);
-	mBootanimPref.setDefaultValue(0);
+	mBootanimPref.setDefaultValue(1);
 	mNotifbarPref.setDefaultValue(1);
 
 	if(!extfsIsMounted){
@@ -424,7 +425,19 @@ public class SpareParts extends PreferenceActivity
 	if (!fileExists("/system/xbin/fix_permissions"))
 	    mFixPermsPref.setEnabled(false);
 
-	patience.dismiss();
+	if (!fileExists("/system/bin/busybox") && !fileExists("/system/xbin/busybox")) {
+	    popup("Full root requiered", "This SpareParts Mod NEEDS root, plus busybox installed!");
+	    // disable all Addons
+	    mBootanimPref.setEnabled(false);
+	    mNotifbarPref.setEnabled(false);
+	    mTrackballPref.setEnabled(false);
+	    mRemvolPref.setEnabled(false);
+	    mWakePref.setEnabled(false);
+	    mHtcImePref.setEnabled(false);
+	    mCpuLedPref.setEnabled(false);
+	    mLauncher2Pref.setEnabled(false);
+	    mGalaxyLWPPref.setEnabled(false);
+	}
 
 	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
     }
@@ -512,7 +525,7 @@ public class SpareParts extends PreferenceActivity
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
 		"rwsystem",
-		"wget -q " + REPO + objValue.toString() + " -O /data/local/tmp/bootanimation.zip",
+		"busybox wget -q " + REPO + objValue.toString() + " -O /data/local/tmp/bootanimation.zip",
 		"busybox mv /data/local/tmp/bootanimation.zip /system/media/bootanimation.zip",
 		"rosystem"
 	    };
@@ -522,11 +535,11 @@ public class SpareParts extends PreferenceActivity
 	    if (objValue.toString().equals("0")) {
 		String[] commands = {
 		    "rwsystem",
-		    "wget -q " + REPO + "blackonwhite-framework.jar -O /data/local/tmp/framework.jar",
+		    "busybox wget -q " + REPO + "blackonwhite-framework.jar -O /data/local/tmp/framework.jar",
 		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
-		    "wget -q " + REPO + "blackonwhite-services.jar -O /data/local/tmp/services.jar",
+		    "busybox wget -q " + REPO + "blackonwhite-services.jar -O /data/local/tmp/services.jar",
 		    "busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
-		    "wget -q " + REPO + "whitebg-framework-res.apk -O /data/local/tmp/framework-res.apk",
+		    "busybox wget -q " + REPO + "whitebg-framework-res.apk -O /data/local/tmp/framework-res.apk",
 		    "busybox mv /data/local/tmp/framework-res.apk /system/framework/framework-res.apk",
 		    "rosystem"
 		};
@@ -534,11 +547,11 @@ public class SpareParts extends PreferenceActivity
 	    } else if (objValue.toString().equals("1")) {
 		String[] commands = {
 		    "rwsystem",
-		    "wget -q " + REPO + "whiteonblack-framework.jar -O /data/local/tmp/framework.jar",
+		    "busybox wget -q " + REPO + "whiteonblack-framework.jar -O /data/local/tmp/framework.jar",
 		    "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
-		    "wget -q " + REPO + "whiteonblack-services.jar -O /data/local/tmp/services.jar",
+		    "busybox wget -q " + REPO + "whiteonblack-services.jar -O /data/local/tmp/services.jar",
 		    "busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
-		    "wget -q " + REPO + "blackbg-framework-res.apk -O /data/local/tmp/framework-res.apk",
+		    "busybox wget -q " + REPO + "blackbg-framework-res.apk -O /data/local/tmp/framework-res.apk",
 		    "busybox mv /data/local/tmp/framework-res.apk /system/framework/framework-res.apk",
 		    "rosystem"
 		};
@@ -550,10 +563,10 @@ public class SpareParts extends PreferenceActivity
 	    if (!have) {
 		String[] commands = {
 		    // "rwsystem",
-		    // "wget -q " + REPO + "framework.jar -O /data/local/tmp/framework.jar",
+		    // "busybox wget -q " + REPO + "framework.jar -O /data/local/tmp/framework.jar",
 		    // "busybox mv /data/local/tmp/tmp/framework.jar /system/framework/framework.jar",
 		    // "rosystem",
-		    "wget -q " + REPO + "trackball.apk -O /data/local/tmp/trackball.apk",
+		    "busybox wget -q " + REPO + "trackball.apk -O /data/local/tmp/trackball.apk",
 		    "pm install -r /data/local/tmp/trackball.apk"
 		};
 		sendshell(commands, false, "Downloading and installing Trackball Alert...");
@@ -568,7 +581,7 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mRemvolPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "remvol.apk -O /data/local/tmp/remvol.apk",
+		    "busybox wget -q " + REPO + "remvol.apk -O /data/local/tmp/remvol.apk",
 		    "pm install -r /data/local/tmp/remvol.apk"
 		};
 		sendshell(commands, false, "Downloading and installing RemVol...");
@@ -583,11 +596,11 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mWakePref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk",
+		    "busybox wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk",
 		    "pm install -r /data/local/tmp/wake.apk",
 		    "rwsystem",
-		    "wget -q " + REPO + "myLock.apk -O /data/local/tmp/myLock.xml",
-		    "mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
+		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml",
+		    "busybox mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
 		    "rosystem"
 		};
 		sendshell(commands, false, "Downloading and installing myLock...");
@@ -602,9 +615,9 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mHtcImePref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "clicker.apk -O /data/local/tmp/clicker.apk",
+		    "busybox wget -q " + REPO + "clicker.apk -O /data/local/tmp/clicker.apk",
 		    "pm install -r /data/local/tmp/clicker.apk",
-		    "wget -q " + REPO + "htc_ime.apk -O /data/local/tmp/htc_ime.apk",
+		    "busybox wget -q " + REPO + "htc_ime.apk -O /data/local/tmp/htc_ime.apk",
 		    "pm install -r /data/local/tmp/htc_ime.apk"
 		};
 		sendshell(commands, false, "Downloading and installing HTC_IME...");
@@ -620,7 +633,7 @@ public class SpareParts extends PreferenceActivity
 	    boolean have = mCpuLedPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "wget -q " + REPO + "cpu_led.apk -O /data/local/tmp/cpu_led.apk",
+		    "busybox wget -q " + REPO + "cpu_led.apk -O /data/local/tmp/cpu_led.apk",
 		    "pm install -r /data/local/tmp/cpu_led.apk"
 		};
 		sendshell(commands, false, "Downloading and installing NetMeter+LED...");
@@ -636,7 +649,7 @@ public class SpareParts extends PreferenceActivity
 	    if (!have) {
 		String[] commands = {
 		    "rwsystem",
-		    "wget -q " + REPO + "Launcher2.apk -O /data/local/tmp/Launcher2.apk",
+		    "busybox wget -q " + REPO + "Launcher2.apk -O /data/local/tmp/Launcher2.apk",
 		    "busybox mv /data/local/tmp/Launcher2.apk /system/app/Launcher2.apk",
 		    "rosystem"
 		};
@@ -655,16 +668,16 @@ public class SpareParts extends PreferenceActivity
 	    if (!have) {
 		String[] commands = {
 		    "rwsystem",
-		    "wget -q " + REPO + "libmnglw-0.8.2.so -O /data/local/tmp/libmnglw-0.8.2.so",
+		    "busybox wget -q " + REPO + "libmnglw-0.8.2.so -O /data/local/tmp/libmnglw-0.8.2.so",
 		    "busybox mv /data/local/tmp/libmnglw-0.8.2.so /system/lib/libmnglw-0.8.2.so",
 		    "rosystem",
-		    "wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk",
 		    "pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk",
-		    "wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk",
 		    "pm install -r /data/local/tmp/TATLiveWallpapersBlueSea.apk",
-		    "wget -q " + REPO + "TATLiveWallpapersDandelion.apk -O /data/local/tmp/TATLiveWallpapersDandelion.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersDandelion.apk -O /data/local/tmp/TATLiveWallpapersDandelion.apk",
 		    "pm install -r /data/local/tmp/TATLiveWallpapersDandelion.apk",
-		    "wget -q " + REPO + "TATLiveWallpapersOceanWave.apk -O /data/local/tmp/TATLiveWallpapersOceanWave.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersOceanWave.apk -O /data/local/tmp/TATLiveWallpapersOceanWave.apk",
 		    "pm install -r /data/local/tmp/TATLiveWallpapersOceanWave.apk"
 		};
 		sendshell(commands, true, "Downloading and installing Galaxy LWPs...");
@@ -901,6 +914,21 @@ public class SpareParts extends PreferenceActivity
 	    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int id) {
 			dialog.cancel();
+		    }
+		});
+	AlertDialog alert = builder.create();
+	alert.show();
+    }
+
+    public void bad(final String title, final String message) {
+	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	builder.setTitle(title)
+	    .setMessage(message)
+	    .setCancelable(false)
+	    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int id) {
+			dialog.cancel();
+			finish();
 		    }
 		});
 	AlertDialog alert = builder.create();
