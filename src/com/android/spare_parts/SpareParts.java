@@ -19,67 +19,56 @@ package com.android.spare_parts;
 
 import com.android.spare_parts.ShellInterface;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Environment;
-import android.os.ServiceManager;
-import android.os.Message;
-import android.os.StatFs;
 import android.os.SystemProperties;
 import android.os.RemoteException;
-import android.os.PowerManager;
+import android.os.ServiceManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.StatFs;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.text.format.Formatter;
-import android.net.Uri;
 import android.util.Log;
 import android.view.IWindowManager;
-import android.widget.Toast;
 
 import java.util.List;
-import java.io.*;
-import java.io.IOException;
-import java.io.File;
-import java.io.Reader;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.net.*;
-import java.lang.Thread;
-import java.lang.String;
-import java.lang.StringBuilder;
-import java.util.*;
+//import java.util.Formatter;
+import android.text.format.Formatter;
+import android.net.Uri;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+//import java.net.URI;
+import java.net.URL;
 
 public class SpareParts extends PreferenceActivity
-    implements Preference.OnPreferenceChangeListener,
-	       SharedPreferences.OnSharedPreferenceChangeListener {
+	implements Preference.OnPreferenceChangeListener,
+	SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "SpareParts";
     private static String REPO;
 
@@ -104,7 +93,6 @@ public class SpareParts extends PreferenceActivity
     private static final String ROM_UPDATE_PREF = "rom_update";
 
     private static final String APP2SD_PREF = "app2sd";
-    private static final String TIMEOUT_PREF = "timeout";
     private static final String UI_SOUNDS_PREF = "ui_sounds";
     private static final String FIX_PERMS_PREF = "fix_perms";
 
@@ -142,6 +130,10 @@ public class SpareParts extends PreferenceActivity
     private static final String ABOUT_DONATE = "about_donate";
     private static final String ABOUT_SOURCES = "about_sources";
 
+    private static final String BATTERY_HISTORY_PREF = "battery_history_settings";
+    private static final String BATTERY_INFORMATION_PREF = "battery_information_settings";
+    private static final String USAGE_STATISTICS_PREF = "usage_statistics_settings";
+
     private static final String WINDOW_ANIMATIONS_PREF = "window_animations";
     private static final String TRANSITION_ANIMATIONS_PREF = "transition_animations";
     private static final String FANCY_IME_ANIMATIONS_PREF = "fancy_ime_animations";
@@ -156,7 +148,6 @@ public class SpareParts extends PreferenceActivity
     private Preference mUpdatePref;
 
     private ListPreference mApp2sdPref;
-    private ListPreference mTimeoutPref;
     private CheckBoxPreference mUiSoundsPref;
     private CheckBoxPreference mFixPermsPref;
 
@@ -200,8 +191,43 @@ public class SpareParts extends PreferenceActivity
 
     private IWindowManager mWindowManager;
 
+    public static boolean updatePreferenceToSpecificActivityOrRemove(Context context,
+	    PreferenceGroup parentPreferenceGroup, String preferenceKey, int flags) {
+
+	Preference preference = parentPreferenceGroup.findPreference(preferenceKey);
+	if (preference == null) {
+	    return false;
+	}
+
+	Intent intent = preference.getIntent();
+	if (intent != null) {
+	    // Find the activity that is in the system image
+	    PackageManager pm = context.getPackageManager();
+	    List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
+	    int listSize = list.size();
+	    for (int i = 0; i < listSize; i++) {
+		ResolveInfo resolveInfo = list.get(i);
+		if ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)
+			!= 0) {
+
+		    // Replace the intent with this specific activity
+		    preference.setIntent(new Intent().setClassName(
+			    resolveInfo.activityInfo.packageName,
+			    resolveInfo.activityInfo.name));
+
+		    return true;
+		}
+	    }
+	}
+
+	// Did not find a matching activity, so remove the preference
+	parentPreferenceGroup.removePreference(preference);
+
+	return true;
+    }
+
     @Override
-	public void onCreate(Bundle icicle) {
+    public void onCreate(Bundle icicle) {
 	super.onCreate(icicle);
 	addPreferencesFromResource(R.xml.spare_parts);
 
@@ -249,9 +275,6 @@ public class SpareParts extends PreferenceActivity
 
 	mApp2sdPref = (ListPreference) prefSet.findPreference(APP2SD_PREF);
 	mApp2sdPref.setOnPreferenceChangeListener(this);
-	mTimeoutPref = (ListPreference) prefSet.findPreference(TIMEOUT_PREF);
-	mTimeoutPref.setOnPreferenceChangeListener(this);
-	mTimeoutPref.setEnabled(false);
 	mUiSoundsPref = (CheckBoxPreference) prefSet.findPreference(UI_SOUNDS_PREF);
 	mUiSoundsPref.setOnPreferenceChangeListener(this);
 	mFixPermsPref = (CheckBoxPreference) prefSet.findPreference(FIX_PERMS_PREF);
@@ -320,7 +343,6 @@ public class SpareParts extends PreferenceActivity
 	mNotifbarPref.setEnabled(false);
 	mTrackballPref = (CheckBoxPreference) prefSet.findPreference(TRACKBALL_PREF);
 	mTrackballPref.setOnPreferenceChangeListener(this);
-	mNotifbarPref.setEnabled(false);
 	mRemvolPref = (CheckBoxPreference) prefSet.findPreference(REMVOL_PREF);
 	mRemvolPref.setOnPreferenceChangeListener(this);
 	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
@@ -399,7 +421,10 @@ public class SpareParts extends PreferenceActivity
 	mShowMapsCompassPref = (CheckBoxPreference) prefSet.findPreference(MAPS_COMPASS_PREF);
 	mCompatibilityMode = (CheckBoxPreference) findPreference(KEY_COMPATIBILITY_MODE);
 	mCompatibilityMode.setPersistent(false);
-	mCompatibilityMode.setChecked(Settings.System.getInt(getContentResolver(), Settings.System.COMPATIBILITY_MODE, 1) != 0);
+	mCompatibilityMode.setChecked(Settings.System.getInt(getContentResolver(),
+		Settings.System.COMPATIBILITY_MODE, 1) != 0);
+
+	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
 
 	if (fileExists("/system/media/audio/ui/.bak"))
 	    mUiSoundsPref.setChecked(true);
@@ -439,7 +464,15 @@ public class SpareParts extends PreferenceActivity
 	    mGalaxyLWPPref.setEnabled(false);
 	}
 
-	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+	final PreferenceGroup parentPreference = getPreferenceScreen();
+	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
+		BATTERY_HISTORY_PREF, 0);
+	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
+		BATTERY_INFORMATION_PREF, 0);
+	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
+		USAGE_STATISTICS_PREF, 0);
+
+	parentPreference.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     private String formatSize(long size) {
@@ -477,10 +510,15 @@ public class SpareParts extends PreferenceActivity
 
     private void updateToggles() {
 	try {
-	    mFancyImeAnimationsPref.setChecked(Settings.System.getInt(getContentResolver(), Settings.System.FANCY_IME_ANIMATIONS, 0) != 0);
-	    mHapticFeedbackPref.setChecked(Settings.System.getInt(getContentResolver(), Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) != 0);
+	    mFancyImeAnimationsPref.setChecked(Settings.System.getInt(
+		    getContentResolver(),
+		    Settings.System.FANCY_IME_ANIMATIONS, 0) != 0);
+	    mHapticFeedbackPref.setChecked(Settings.System.getInt(
+		    getContentResolver(),
+		    Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) != 0);
 	    Context c = createPackageContext("com.google.android.apps.maps", 0);
-	    mShowMapsCompassPref.setChecked(c.getSharedPreferences("extra-features", MODE_WORLD_READABLE).getBoolean("compass", false));
+	    mShowMapsCompassPref.setChecked(c.getSharedPreferences("extra-features", MODE_WORLD_READABLE)
+		.getBoolean("compass", false));
 	} catch (NameNotFoundException e) {
 	    Log.w(TAG, "Failed reading maps compass");
 	    e.printStackTrace();
@@ -502,8 +540,6 @@ public class SpareParts extends PreferenceActivity
 		"pm setInstallLocation " + objValue
 	    };
 	    sendshell(commands, false, "Activating app2sd...");
-	}
-	else if (preference == mTimeoutPref) {
 	}
 	else if (preference == mUiSoundsPref) {
 	    boolean have = mUiSoundsPref.isChecked();
@@ -695,15 +731,16 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, false, "Removing Galaxy LWPs...");
 	    }
 	}
-
 	// always let the preference setting proceed.
 	return true;
     }
 
     @Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 	if (preference == mCompatibilityMode) {
-	    Settings.System.putInt(getContentResolver(), Settings.System.COMPATIBILITY_MODE, mCompatibilityMode.isChecked() ? 1 : 0);
+	    Settings.System.putInt(getContentResolver(),
+		    Settings.System.COMPATIBILITY_MODE,
+		    mCompatibilityMode.isChecked() ? 1 : 0);
 	    return true;
 	}
 	return false;
@@ -729,7 +766,8 @@ public class SpareParts extends PreferenceActivity
     public void writeEndButtonPreference(Object objValue) {
 	try {
 	    int val = Integer.parseInt(objValue.toString());
-	    Settings.System.putInt(getContentResolver(), Settings.System.END_BUTTON_BEHAVIOR, val);
+	    Settings.System.putInt(getContentResolver(),
+		    Settings.System.END_BUTTON_BEHAVIOR, val);
 	} catch (NumberFormatException e) {
 	}
     }
@@ -751,7 +789,7 @@ public class SpareParts extends PreferenceActivity
 	try {
 	    float scale = mWindowManager.getAnimationScale(which);
 	    pref.setValueIndex(floatToIndex(scale,
-					    R.array.entryvalues_animations));
+		    R.array.entryvalues_animations));
 	} catch (RemoteException e) {
 	}
     }
@@ -759,17 +797,17 @@ public class SpareParts extends PreferenceActivity
     public void readFontSizePreference(ListPreference pref) {
 	try {
 	    mCurConfig.updateFrom(
-				  ActivityManagerNative.getDefault().getConfiguration());
+		ActivityManagerNative.getDefault().getConfiguration());
 	} catch (RemoteException e) {
 	}
 	pref.setValueIndex(floatToIndex(mCurConfig.fontScale,
-					R.array.entryvalues_font_size));
+		R.array.entryvalues_font_size));
     }
 
     public void readEndButtonPreference(ListPreference pref) {
 	try {
 	    pref.setValueIndex(Settings.System.getInt(getContentResolver(),
-						      Settings.System.END_BUTTON_BEHAVIOR));
+		    Settings.System.END_BUTTON_BEHAVIOR));
 	} catch (SettingNotFoundException e) {
 	}
     }
@@ -777,12 +815,12 @@ public class SpareParts extends PreferenceActivity
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
 	if (FANCY_IME_ANIMATIONS_PREF.equals(key)) {
 	    Settings.System.putInt(getContentResolver(),
-				   Settings.System.FANCY_IME_ANIMATIONS,
-				   mFancyImeAnimationsPref.isChecked() ? 1 : 0);
+		    Settings.System.FANCY_IME_ANIMATIONS,
+		    mFancyImeAnimationsPref.isChecked() ? 1 : 0);
 	} else if (HAPTIC_FEEDBACK_PREF.equals(key)) {
 	    Settings.System.putInt(getContentResolver(),
-				   Settings.System.HAPTIC_FEEDBACK_ENABLED,
-				   mHapticFeedbackPref.isChecked() ? 1 : 0);
+		    Settings.System.HAPTIC_FEEDBACK_ENABLED,
+		    mHapticFeedbackPref.isChecked() ? 1 : 0);
 	} else if (MAPS_COMPASS_PREF.equals(key)) {
 	    try {
 		Context c = createPackageContext("com.google.android.apps.maps", 0);
@@ -790,7 +828,6 @@ public class SpareParts extends PreferenceActivity
 		    .edit()
 		    .putBoolean("compass", mShowMapsCompassPref.isChecked())
 		    .commit();
-		mShowMapsCompassPref.setChecked(true);
 	    } catch (NameNotFoundException e) {
 		Log.w(TAG, "Failed setting maps compass");
 		e.printStackTrace();
@@ -888,9 +925,9 @@ public class SpareParts extends PreferenceActivity
     public void needreboot() {
 	Log.i(TAG, "needreboot");
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	builder.setMessage(getResources().getString(R.string.ask_reboot))
+	builder.setMessage("Reboot is requiered to apply. Would you like to reboot now?")
 	    .setCancelable(false)
-	    .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int id) {
 			try {
 			    Runtime.getRuntime().exec("su -c reboot");
@@ -898,7 +935,7 @@ public class SpareParts extends PreferenceActivity
 			}
 		    }
 		})
-	    .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+	    .setNegativeButton("No", new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int id) {
 			dialog.cancel();
 		    }
@@ -937,7 +974,7 @@ public class SpareParts extends PreferenceActivity
     }
 
     @Override
-	public void onResume() {
+    public void onResume() {
 	super.onResume();
 	readAnimationPreference(0, mWindowAnimationsPref);
 	readAnimationPreference(1, mTransitionAnimationsPref);
@@ -945,5 +982,4 @@ public class SpareParts extends PreferenceActivity
 	readEndButtonPreference(mEndButtonPref);
 	updateToggles();
     }
-
 }

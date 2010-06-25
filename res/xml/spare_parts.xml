@@ -106,15 +106,6 @@
     <PreferenceCategory
        android:title="Advanced">
 
-      <ListPreference
-	 android:key="timeout"
-	 android:title="Screen timeout"
-	 android:summary="Set the screen delay before sleep"
-	 android:entries="@array/entries_timeout"
-	 android:entryValues="@array/entryvalues_timeout"
-	 android:defaultValue="0"
-	 android:dialogTitle="Select an option" />
-
       <CheckBoxPreference
 	 android:key="ui_sounds"
 	 android:title="UI sounds"
@@ -272,9 +263,8 @@
 
 </PreferenceCategory>
 
-<!-- from Enomther -->
 <PreferenceCategory
-	android:title="Enomther">
+   android:title="Enomther">
 
   <PreferenceScreen
      android:title="Data Storage Options"
@@ -341,13 +331,41 @@
   </PreferenceScreen>
 
 </PreferenceCategory>
-<!-- /from Enomther -->
 
 <PreferenceCategory
    android:title="Stock SpareParts">
 
   <PreferenceScreen
      android:title="Basic SpareParts settings">
+
+    <PreferenceCategory
+       android:title="@string/device_info_title">
+
+      <PreferenceScreen android:key="battery_history_settings"
+			android:title="@string/title_battery_history"
+			android:summary="@string/summary_battery_history">
+	<intent android:action="android.intent.action.MAIN"
+		android:targetPackage="com.android.settings"
+		android:targetClass="com.android.settings.battery_history.BatteryHistory" />
+      </PreferenceScreen>
+
+      <PreferenceScreen android:key="battery_information_settings"
+			android:title="@string/title_battery_information"
+			android:summary="@string/summary_battery_information">
+	<intent android:action="android.intent.action.MAIN"
+		android:targetPackage="com.android.settings"
+		android:targetClass="com.android.settings.BatteryInfo" />
+      </PreferenceScreen>
+
+      <PreferenceScreen android:key="usage_statistics_settings"
+			android:title="@string/title_usage_statistics"
+			android:summary="@string/summary_usage_statistics">
+	<intent android:action="android.intent.action.MAIN"
+		android:targetPackage="com.android.settings"
+		android:targetClass="com.android.settings.UsageStats" />
+      </PreferenceScreen>
+
+    </PreferenceCategory>
 
     <PreferenceCategory
        android:title="@string/general_title">
