@@ -211,16 +211,15 @@ public class SpareParts extends PreferenceActivity
 	REPO = getResources().getString(R.string.repo_url);
 
 	String build = Build.DISPLAY;
-	String rom_name = build.substring(0, build.indexOf('_'));
-
-	// To avoid "stupid" copies
-	if (!rom_name.equals("LeoFroYo")) // You should put the name of your ROM here
-	    popup("LeoFroYo", "This SpareParts is made to be used on leonnib4's ROM: LeoFroYo."
-		  + "\n"
-		  + "If you're using another ROM, you should get my sources and edit it.");
+	String rom_name = build;
+	if (build.contains("_"))
+	    rom_name = build.substring(0, build.indexOf('_'));
 
 	setStringSummary(ROM_NAME_PREF, rom_name);
-	setStringSummary(ROM_VERSION_PREF, build.substring(build.indexOf('_') + 1));
+	if (build.contains("_"))
+	    setStringSummary(ROM_VERSION_PREF, build.substring(build.indexOf('_') + 1));
+	else
+	    setStringSummary(ROM_VERSION_PREF, " Unavailable");
 	setStringSummary(ROM_BUILD_PREF, Build.ID + " " + (fileExists("/system/framework/framework.odex") ? "odex" : "deodex"));
 	setStringSummary(ROM_FINGERPRINT_PREF, getFormattedFingerprint());
 	String radio = getSystemValue("gsm.version.baseband");
@@ -422,6 +421,8 @@ public class SpareParts extends PreferenceActivity
 	}
 	if (!fileExists("/system/xbin/nouisounds"))
 	    mUiSoundsPref.setEnabled(false);
+	if (!fileExists("/system/xbin/fix_permissions"))
+	    mFixPermsPref.setEnabled(false);
 
 	patience.dismiss();
 
