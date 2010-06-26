@@ -589,7 +589,6 @@ public class SpareParts extends PreferenceActivity
 		REMOUNT_RO,
 	    };
 	    sendshell(commands, false, "Removing Car Home...");
-	    return false;
 	}
 	else if (preference == mEmailPref) {
 	    String[] commands = {
@@ -598,7 +597,6 @@ public class SpareParts extends PreferenceActivity
 		REMOUNT_RO,
 	    };
 	    sendshell(commands, false, "Removing Email...");
-	    return false;
 	}
 	else if (preference == mFacebookPref) {
 	    String[] commands = {
@@ -607,7 +605,6 @@ public class SpareParts extends PreferenceActivity
 		REMOUNT_RO,
 	    };
 	    sendshell(commands, false, "Removing Facebook...");
-	    return false;
 	}
 	else if (preference == mTwitterPref) {
 	    String[] commands = {
@@ -616,7 +613,6 @@ public class SpareParts extends PreferenceActivity
 		REMOUNT_RO,
 	    };
 	    sendshell(commands, false, "Removing Twitter...");
-	    return false;
 	}
 	else if (preference == mYouTubePref) {
 	    String[] commands = {
@@ -625,7 +621,6 @@ public class SpareParts extends PreferenceActivity
 		REMOUNT_RO,
 	    };
 	    sendshell(commands, false, "Removing YouTube...");
-	    return false;
 	}
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
