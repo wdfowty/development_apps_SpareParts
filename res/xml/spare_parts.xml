@@ -19,7 +19,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 <PreferenceCategory
-   android:title="LeoFroYo">
+   android:title="Software">
 
   <PreferenceScreen
      android:title="ROM infos"
@@ -300,7 +300,7 @@
 </PreferenceCategory>
 
 <PreferenceCategory
-   android:title="Enomther">
+   android:title="Hardware">
 
   <PreferenceScreen
      android:title="Data Storage Options"
@@ -342,25 +342,30 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-       android:title="User App / Dalvik-Cache Options">
+       android:title="Refresh">
+
+      <PreferenceScreen
+	 android:key="refresh"
+	 android:title="Refresh storage data"
+	 android:summary="">
+      </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+       android:title="App2SD / Dalvik-Cache">
 
       <CheckBoxPreference
-	 android:key="old_app2sd_opt"
+	 android:key="app2sd_opt"
 	 android:title="Old App2SD"
-	 android:summaryOn="old_App2SD Enabled"
-	 android:summaryOff="Old App2SD Disabled"/>
+	 android:summaryOn="old App2SD enabled"
+	 android:summaryOff="Old App2SD disabled"/>
 
       <CheckBoxPreference
-	 android:key="dccache_opt"
-	 android:title="Dalvik-Cache on /cache"
-	 android:summaryOn="Dalvik-Cache on /cache Enabled"
-	 android:summaryOff="Dalvik-Cache on /cache Disabled"/>
-
-      <CheckBoxPreference
-	 android:key="dcsdcard_opt"
+	 android:key="dalvik2sd_opt"
 	 android:title="Dalvik-Cache on SDCard"
-	 android:summaryOn="Dalvik-Cache on SDCard Enabled"
-	 android:summaryOff="Dalvik-Cache on SDCard Disabled"/>
+	 android:summaryOn="Dalvik-Cache on sdcard enabled"
+	 android:summaryOff="Dalvik-Cache on sdcard disabled"/>
 
     </PreferenceCategory>
 

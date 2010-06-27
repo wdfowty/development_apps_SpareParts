@@ -128,9 +128,9 @@ public class SpareParts extends PreferenceActivity
     private static final String SDCARDFAT_STORAGE_PATH = "/sdcard";
     private static final String SDCARDEXT_PART_SIZE = "sdcardext_storage_levels";
     private static final String SDCARDEXT_STORAGE_PATH = "/system/sd";
-    private static final String OLD_APP2SD_PREF = "old_app2sd_opt";
-    private static final String DCCACHE_PREF = "dccache_opt";
-    private static final String DCSDCARD_PREF = "dcsdcard_opt";
+    private static final String REFRESH_PREF = "refresh";
+    private static final String OLD_APP2SD_PREF = "app2sd_opt";
+    private static final String DALVIK2SD_PREF = "dalvik2sd_opt";
 
     private static final String ABOUT_AUTHOR = "about_author";
     private static final String ABOUT_DONATE = "about_donate";
@@ -184,9 +184,9 @@ public class SpareParts extends PreferenceActivity
     private Preference mCacheSize;
     private Preference mSDCardFATSize;
     private Preference mSDCardEXTSize;
+    private Preference mRefresh;
     private CheckBoxPreference mOldApp2sdPref;
-    private CheckBoxPreference mDcCachePref;
-    private CheckBoxPreference mDcSdcardPref;
+    private CheckBoxPreference mDalvik2sdPref;
 
     private Preference mAboutAuthor;
     private Preference mAboutDonate;
@@ -381,21 +381,24 @@ public class SpareParts extends PreferenceActivity
 
 	mOldApp2sdPref = (CheckBoxPreference) prefSet.findPreference(OLD_APP2SD_PREF);
 	mOldApp2sdPref.setOnPreferenceChangeListener(this);
-	mOldApp2sdPref.setEnabled(false);
-	mDcCachePref = (CheckBoxPreference) prefSet.findPreference(DCCACHE_PREF);
-	mDcCachePref.setOnPreferenceChangeListener(this);
-	mDcCachePref.setEnabled(false);
-	mDcSdcardPref = (CheckBoxPreference) prefSet.findPreference(DCSDCARD_PREF);
-	mDcSdcardPref.setOnPreferenceChangeListener(this);
-	mDcSdcardPref.setEnabled(false);
+	mDalvik2sdPref = (CheckBoxPreference) prefSet.findPreference(DALVIK2SD_PREF);
+	mDalvik2sdPref.setOnPreferenceChangeListener(this);
 
-	extfsIsMounted     = SystemProperties.get("ep.extfs.mounted", "0").equals("1");
+	extfsIsMounted     = fileExists("/dev/block/mmcblk0p2");
 	mSystemSize        = (Preference) prefSet.findPreference(SYSTEM_PART_SIZE);
 	mDataSize          = (Preference) prefSet.findPreference(DATA_PART_SIZE);
 	mCacheSize         = (Preference) prefSet.findPreference(CACHE_PART_SIZE);
 	mSDCardFATSize     = (Preference) prefSet.findPreference(SDCARDFAT_PART_SIZE);
 	mSDCardEXTSize     = (Preference) prefSet.findPreference(SDCARDEXT_PART_SIZE);
 	SetupFSPartSize();
+	mRefresh = (Preference) prefSet.findPreference(REFRESH_PREF);
+	findPreference(REFRESH_PREF)
+	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		    public boolean onPreferenceClick(Preference preference) {
+			SetupFSPartSize();
+			return true;
+		    }
+		});
 
 	mAboutAuthor = (Preference) prefSet.findPreference(ABOUT_AUTHOR);
 	findPreference(ABOUT_AUTHOR)
@@ -466,9 +469,7 @@ public class SpareParts extends PreferenceActivity
 	// Enabled
 	if(!extfsIsMounted){
 	    mOldApp2sdPref.setEnabled(false);
-	    mDcSdcardPref.setEnabled(false);
-	    mSDCardEXTSize.setEnabled(false);
-	    mSDCardEXTSize.setSummary("no extfs partition");
+	    mDalvik2sdPref.setEnabled(false);
 	}
 	mUiSoundsPref.setEnabled(fileExists("/system/xbin/nouisounds"));
 	mFixPermsPref.setEnabled(fileExists("/system/xbin/fix_permissions"));
@@ -488,12 +489,9 @@ public class SpareParts extends PreferenceActivity
 	}
 
 	final PreferenceGroup parentPreference = getPreferenceScreen();
-	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
-						   BATTERY_HISTORY_PREF, 0);
-	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
-						   BATTERY_INFORMATION_PREF, 0);
-	updatePreferenceToSpecificActivityOrRemove(this, parentPreference,
-						   USAGE_STATISTICS_PREF, 0);
+	updatePreferenceToSpecificActivityOrRemove(this, parentPreference, BATTERY_HISTORY_PREF, 0);
+	updatePreferenceToSpecificActivityOrRemove(this, parentPreference, BATTERY_INFORMATION_PREF, 0);
+	updatePreferenceToSpecificActivityOrRemove(this, parentPreference, USAGE_STATISTICS_PREF, 0);
 
 	parentPreference.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -523,7 +521,7 @@ public class SpareParts extends PreferenceActivity
 	    mDataSize.setSummary(ObtainFSPartSize      (DATA_STORAGE_PATH));
 	    mCacheSize.setSummary(ObtainFSPartSize     (CACHE_STORAGE_PATH));
 	    mSDCardFATSize.setSummary(ObtainFSPartSize (SDCARDFAT_STORAGE_PATH));
-	    if(extfsIsMounted)
+	    if (extfsIsMounted)
 		mSDCardEXTSize.setSummary(ObtainFSPartSize (SDCARDEXT_STORAGE_PATH));
 	} catch (IllegalArgumentException e) {
 	    Log.w(TAG, "Failed to obtain FS partition sizes");
@@ -786,6 +784,34 @@ public class SpareParts extends PreferenceActivity
 		    "pm uninstall "
 		};
 		sendshell(commands, false, "Removing Galaxy LWPs...");
+	    }
+	}
+	else if (preference == mOldApp2sdPref) {
+	    boolean have = mOldApp2sdPref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "a2sd on"
+		};
+		sendshell(commands, true, "Mounting ext and moving apps...");
+	    } else {
+		String[] commands = {
+		    "a2sd off",
+		};
+		sendshell(commands, true, "Unmounting ext and restoring apps...");
+	    }
+	}
+	else if (preference == mDalvik2sdPref) {
+	    boolean have = mDalvik2sdPref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "dalvik2sd on"
+		};
+		sendshell(commands, true, "Mounting ext and moving dalvik-cache...");
+	    } else {
+		String[] commands = {
+		    "dalvik2sd off",
+		};
+		sendshell(commands, true, "Unmounting ext and restoring dalvik-cache...");
 	    }
 	}
 	// always let the preference setting proceed.
