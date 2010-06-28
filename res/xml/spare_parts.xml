@@ -42,13 +42,7 @@
 
       <PreferenceScreen
 	 android:key="rom_build"
-	 android:title="Build"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="rom_fingerprint"
-	 android:title="Fingerprint"
+	 android:title="Build / Fingerprint"
 	 android:summary=" Unavailable">
       </PreferenceScreen>
 
@@ -95,7 +89,7 @@
       <ListPreference
 	 android:key="app2sd"
 	 android:title="Stock App2SD"
-	 android:summary="Where to store apps"
+	 android:summary=" Where to store apps"
 	 android:entries="@array/entries_app2sd"
 	 android:entryValues="@array/entryvalues_app2sd"
 	 android:defaultValue="0"
@@ -109,14 +103,20 @@
       <CheckBoxPreference
 	 android:key="ui_sounds"
 	 android:title="UI sounds"
-	 android:summaryOn="UI sounds disable"
-	 android:summaryOff="UI sounds enable" />
+	 android:summaryOn=" UI sounds disable"
+	 android:summaryOff=" UI sounds enable" />
 
       <CheckBoxPreference
 	 android:key="fix_perms"
 	 android:title="Fix permissions"
-	 android:summaryOn="Permissions fixed"
-	 android:summaryOff="Can resolve weired FC" />
+	 android:summaryOn=" Permissions fixed"
+	 android:summaryOff=" Can resolve weired FC" />
+
+      <CheckBoxPreference
+	 android:key="zipalign"
+	 android:title="ZipAlign APKs"
+	 android:summaryOn=" zipalign launch at boot"
+	 android:summaryOff=" zipalign not launch at boot" />
 
     </PreferenceCategory>
 
@@ -174,32 +174,32 @@
     <CheckBoxPreference
        android:key="car_home"
        android:title="Car Home"
-       android:summaryOn="car Home installed"
-       android:summaryOff="Car Home not installed" />
+       android:summaryOn=" Car Home installed"
+       android:summaryOff=" Car Home not installed" />
 
     <CheckBoxPreference
        android:key="email"
        android:title="Email"
-       android:summaryOn="Email installed"
-       android:summaryOff="Email not installed" />
+       android:summaryOn=" Email installed"
+       android:summaryOff=" Email not installed" />
 
     <CheckBoxPreference
        android:key="facebook"
        android:title="Facebook"
-       android:summaryOn="Facebook installed"
-       android:summaryOff="Facebook not installed" />
+       android:summaryOn=" Facebook installed"
+       android:summaryOff=" Facebook not installed" />
 
     <CheckBoxPreference
        android:key="twitter"
        android:title="Twitter"
-       android:summaryOn="Twitter installed"
-       android:summaryOff="Twitter not installed" />
+       android:summaryOn=" Twitter installed"
+       android:summaryOff=" Twitter not installed" />
 
     <CheckBoxPreference
        android:key="youtube"
        android:title="Youtube"
-       android:summaryOn="Youtube installed"
-       android:summaryOff="Youtube not installed" />
+       android:summaryOn=" Youtube installed"
+       android:summaryOff=" Youtube not installed" />
 
   </PreferenceScreen>
 
@@ -210,60 +210,52 @@
     <ListPreference
        android:key="bootanim"
        android:title="Bootanimation"
-       android:summary="Change the bootanimation"
+       android:summary=" Change the bootanimation"
        android:entries="@array/entries_bootanim"
        android:entryValues="@array/entryvalues_bootanim"
-       android:dialogTitle="Select an option" />
-
-    <ListPreference
-       android:key="notifbar"
-       android:title="Notification bar"
-       android:summary="Change its background and text colors"
-       android:entries="@array/entries_notifbar"
-       android:entryValues="@array/entryvalues_notifbar"
        android:dialogTitle="Select an option" />
 
     <CheckBoxPreference
        android:key="trackball"
        android:title="Trackball Alert"
-       android:summaryOn="Trackball Alert installed"
-       android:summaryOff="Trackball Alert not installed" />
+       android:summaryOn=" Trackball Alert installed"
+       android:summaryOff=" Trackball Alert not installed" />
 
     <CheckBoxPreference
        android:key="remvol"
        android:title="Headset volume ctrl."
-       android:summaryOn="Remvol installed"
-       android:summaryOff="Remvol not installed" />
+       android:summaryOn=" Remvol installed"
+       android:summaryOff=" Remvol not installed" />
 
     <CheckBoxPreference
        android:key="wake"
        android:title="Trackball Wake"
-       android:summaryOn="myLock installed"
-       android:summaryOff="myLock not installed" />
+       android:summaryOn=" myLock installed"
+       android:summaryOff=" myLock not installed" />
 
     <CheckBoxPreference
        android:key="htc_ime"
        android:title="HTC_IME keyboard"
-       android:summaryOn="HTC_IME installed"
-       android:summaryOff="HTC_IME not installed" />
+       android:summaryOn=" HTC_IME installed"
+       android:summaryOff=" HTC_IME not installed" />
 
     <CheckBoxPreference
        android:key="cpu_led"
        android:title="%CPU LED monitor"
-       android:summaryOn="NetMeter+LED installed"
-       android:summaryOff="NetMeter+LED not installed" />
+       android:summaryOn=" NetMeter+LED installed"
+       android:summaryOff=" NetMeter+LED not installed" />
 
     <CheckBoxPreference
        android:key="launcher2"
        android:title="Restore Launcher2"
-       android:summaryOn="Launcher2 installed"
-       android:summaryOff="Launcher2 not installed" />
+       android:summaryOn=" Launcher2 installed"
+       android:summaryOff=" Launcher2 not installed" />
 
     <CheckBoxPreference
        android:key="galaxy_lwp"
        android:title="Samsung Galaxy LWPs"
-       android:summaryOn="Galaxy LWPs installed"
-       android:summaryOff="Galaxy LWPs not installed" />
+       android:summaryOn=" Galaxy LWPs installed"
+       android:summaryOff=" Galaxy LWPs not installed" />
 
   </PreferenceScreen>
 
@@ -304,10 +296,10 @@
 
   <PreferenceScreen
      android:title="Data Storage Options"
-     android:summary="Storage, App &amp; Dalvik-Cache Options">
+     android:summary="Storage, App2sd, Dalvik-Cache &amp; Zipalign">
 
     <PreferenceCategory
-       android:title="Storage Sizes (Free  /  Total)">
+       android:title="Storage Sizes">
 
       <PreferenceScreen
 	 android:key="system_storage_levels"
@@ -329,13 +321,13 @@
 
       <PreferenceScreen
 	 android:key="sdcardfat_storage_levels"
-	 android:title="SDCARD - fat32 partition"
+	 android:title="SDCARD - FAT32 partition"
 	 android:summary=" Unavailable">
       </PreferenceScreen>
 
       <PreferenceScreen
 	 android:key="sdcardext_storage_levels"
-	 android:title="SDCARD - extfs partition"
+	 android:title="SDCARD - EXT3 partition"
 	 android:summary=" Unavailable">
       </PreferenceScreen>
 
@@ -346,7 +338,7 @@
 
       <PreferenceScreen
 	 android:key="refresh"
-	 android:title="Refresh storage data"
+	 android:title=" Refresh storage data"
 	 android:summary="">
       </PreferenceScreen>
 
@@ -358,14 +350,14 @@
       <CheckBoxPreference
 	 android:key="app2sd_opt"
 	 android:title="Old App2SD"
-	 android:summaryOn="old App2SD enabled"
-	 android:summaryOff="Old App2SD disabled"/>
+	 android:summaryOn=" Old App2SD enabled"
+	 android:summaryOff=" Old App2SD disabled"/>
 
       <CheckBoxPreference
 	 android:key="dalvik2sd_opt"
 	 android:title="Dalvik-Cache on SDCard"
-	 android:summaryOn="Dalvik-Cache on sdcard enabled"
-	 android:summaryOff="Dalvik-Cache on sdcard disabled"/>
+	 android:summaryOn=" Dalvik-Cache on sdcard"
+	 android:summaryOff=" Dalvik-Cache on /data"/>
 
     </PreferenceCategory>
 
