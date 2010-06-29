@@ -80,6 +80,11 @@ public class SpareParts extends PreferenceActivity
     		needreboot();
     	    }
     	};
+    final Runnable mUpdateFinished = new Runnable() {
+    	    public void run() {
+		patience.dismiss();
+    	    }
+    	};
 
     private boolean extfsIsMounted = false;
 
@@ -695,8 +700,9 @@ public class SpareParts extends PreferenceActivity
 	else if (preference == mFontsPref)
 	    return installOrRemoveAddon(mFontsPref, REPO + "Fonts.apk", false, "Fonts", "com.betterandroid.fonts");
 	else if (preference == mWakePref) {
-	    boolean rt = installOrRemoveAddon(mWakePref, REPO + "wake.apk", true, "myLock", "i4nc4mp.myLock.froyo");
-	    if (mWakePref.isChecked()) {
+	    boolean have = mWakePref.isChecked();
+	    installOrRemoveAddon(mWakePref, REPO + "wake.apk", true, "myLock", "i4nc4mp.myLock.froyo");
+	    if (!have) {
 		String[] commands = {
 		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml" +
@@ -872,15 +878,11 @@ public class SpareParts extends PreferenceActivity
     }
 
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-	if (FANCY_IME_ANIMATIONS_PREF.equals(key)) {
-	    Settings.System.putInt(getContentResolver(),
-		    Settings.System.FANCY_IME_ANIMATIONS,
-		    mFancyImeAnimationsPref.isChecked() ? 1 : 0);
-	} else if (HAPTIC_FEEDBACK_PREF.equals(key)) {
-	    Settings.System.putInt(getContentResolver(),
-		    Settings.System.HAPTIC_FEEDBACK_ENABLED,
-		    mHapticFeedbackPref.isChecked() ? 1 : 0);
-	} else if (MAPS_COMPASS_PREF.equals(key)) {
+	if (FANCY_IME_ANIMATIONS_PREF.equals(key))
+	    Settings.System.putInt(getContentResolver(), Settings.System.FANCY_IME_ANIMATIONS, mFancyImeAnimationsPref.isChecked() ? 1 : 0);
+	else if (HAPTIC_FEEDBACK_PREF.equals(key))
+	    Settings.System.putInt(getContentResolver(), Settings.System.HAPTIC_FEEDBACK_ENABLED, mHapticFeedbackPref.isChecked() ? 1 : 0);
+	else if (MAPS_COMPASS_PREF.equals(key)) {
 	    try {
 		Context c = createPackageContext("com.google.android.apps.maps", 0);
 		c.getSharedPreferences("extra-features", MODE_WORLD_WRITEABLE)
@@ -969,16 +971,28 @@ public class SpareParts extends PreferenceActivity
 
     public boolean sendshell(final String[] commands, final boolean reboot, String message) {
 	patience = ProgressDialog.show(this, "", message, true);
-    	Thread t = new Thread() {
-    		public void run() {
-    		    ShellInterface.doExec(commands);
-    		    patience.dismiss();
-    		    if (reboot == true)
-    			mHandler.post(mUpdateResults);
-    		}
-    	    };
-    	t.start();
-    	return true;
+	Thread t = new Thread() {
+		public void run() {
+		    ShellInterface shell = new ShellInterface(commands);
+		    shell.start();
+		    while (shell.isAlive())
+			{
+			    patience.setProgress(shell.getStatus());
+			    try {
+				Thread.sleep(500);
+			    }
+			    catch (InterruptedException e) {
+			    }
+			}
+		    mHandler.post(mUpdateFinished);
+		    if (shell.interrupted())
+			popup("Error", "Download or install has finished unexpectedly!");
+		    if (reboot == true)
+			mHandler.post(mUpdateResults);
+		}
+	    };
+	t.start();
+	return true;
     }
 
     public void needreboot() {

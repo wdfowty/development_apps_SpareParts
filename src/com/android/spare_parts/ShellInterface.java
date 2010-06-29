@@ -12,8 +12,17 @@ import java.lang.String;
 public class ShellInterface extends Thread {
 
     private static final String TAG = "ShellInterface";
+    private static String[] mCommands;
 
-    public static void doExec(String[] commands) {
+    public ShellInterface(String[] commands) {
+	mCommands = commands;
+    }
+
+    public int getStatus() {
+	return 42;
+    }
+
+    public void run() {
 	List<String> res = new ArrayList<String>();
 	Process process = null;
 	DataOutputStream os = null;
@@ -24,7 +33,7 @@ public class ShellInterface extends Thread {
 	try {
 	    process = Runtime.getRuntime().exec("su");
 	    os = new DataOutputStream(process.getOutputStream());
-	    for (String single : commands) {
+	    for (String single : mCommands) {
 		Log.i(TAG, "sh: " + single);
 		os.writeBytes(single + "\n");
 		os.flush();
