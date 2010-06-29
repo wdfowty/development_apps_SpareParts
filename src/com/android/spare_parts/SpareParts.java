@@ -109,13 +109,17 @@ public class SpareParts extends PreferenceActivity
     private static final String YOUTUBE_PREF = "youtube";
 
     private static final String BOOTANIM_PREF = "bootanim";
-    private static final String TRACKBALL_PREF = "trackball";
-    private static final String REMVOL_PREF = "remvol";
+    private static final String FONTS_PREF = "fonts";
     private static final String WAKE_PREF = "wake";
     private static final String HTC_IME_PREF = "htc_ime";
     private static final String CPU_LED_PREF = "cpu_led";
-    private static final String LAUNCHER2_PREF = "launcher2";
+    private static final String ADWLAUNCHER_PREF = "adwlauncher";
     private static final String GALAXY_LWP_PREF = "galaxy_lwp";
+    private static final String FILEMANAGER_PREF = "filemanager";
+    private static final String SAVENUM_PREF = "savenum";
+    private static final String TERMINAL_PREF = "terminal";
+    private static final String TESLA_FLASHLITE_PREF = "tesla_flashlite";
+    private static final String TRACKBALL_ALERT_PREF = "trackball_alert";
 
     private static final String SYSTEM_PART_SIZE = "system_storage_levels";
     private static final String SYSTEM_STORAGE_PATH = "/system";
@@ -170,13 +174,17 @@ public class SpareParts extends PreferenceActivity
     private CheckBoxPreference mYouTubePref;
 
     private ListPreference mBootanimPref;
-    private CheckBoxPreference mTrackballPref;
-    private CheckBoxPreference mRemvolPref;
+    private CheckBoxPreference mFontsPref;
     private CheckBoxPreference mWakePref;
     private CheckBoxPreference mHtcImePref;
     private CheckBoxPreference mCpuLedPref;
-    private CheckBoxPreference mLauncher2Pref;
+    private CheckBoxPreference mADWLauncherPref;
     private CheckBoxPreference mGalaxyLWPPref;
+    private CheckBoxPreference mFileManagerPref;
+    private CheckBoxPreference mSaveNumPref;
+    private CheckBoxPreference mTerminalPref;
+    private CheckBoxPreference mTeslaFlashlitePref;
+    private CheckBoxPreference mTrackballAlertPref;
 
     private Preference mSystemSize;
     private Preference mDataSize;
@@ -271,12 +279,15 @@ public class SpareParts extends PreferenceActivity
 			try {
 			    URL url = new URL(REPO + "version");
 			    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-			    String inputLine = in.readLine();
+			    String str;
+			    while ((str = in.readLine()) != null) {
+				Log.i(TAG, str);
+			    }
 			    in.close();
 			} catch (MalformedURLException e) {
-			    Log.w(TAG, "Bad URL");
+			    Log.w(TAG, "MalformedURLException");
 			} catch (IOException e) {
-			    Log.w(TAG, "Could not read from URL");
+			    Log.w(TAG, "IOException");
 			}
 			return true;
 		    }
@@ -361,20 +372,28 @@ public class SpareParts extends PreferenceActivity
 
 	mBootanimPref = (ListPreference) prefSet.findPreference(BOOTANIM_PREF);
 	mBootanimPref.setOnPreferenceChangeListener(this);
-	mTrackballPref = (CheckBoxPreference) prefSet.findPreference(TRACKBALL_PREF);
-	mTrackballPref.setOnPreferenceChangeListener(this);
-	mRemvolPref = (CheckBoxPreference) prefSet.findPreference(REMVOL_PREF);
-	mRemvolPref.setOnPreferenceChangeListener(this);
+	mFontsPref = (CheckBoxPreference) prefSet.findPreference(FONTS_PREF);
+	mFontsPref.setOnPreferenceChangeListener(this);
 	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
 	mWakePref.setOnPreferenceChangeListener(this);
 	mHtcImePref = (CheckBoxPreference) prefSet.findPreference(HTC_IME_PREF);
 	mHtcImePref.setOnPreferenceChangeListener(this);
 	mCpuLedPref = (CheckBoxPreference) prefSet.findPreference(CPU_LED_PREF);
 	mCpuLedPref.setOnPreferenceChangeListener(this);
-	mLauncher2Pref = (CheckBoxPreference) prefSet.findPreference(LAUNCHER2_PREF);
-	mLauncher2Pref.setOnPreferenceChangeListener(this);
+	mADWLauncherPref = (CheckBoxPreference) prefSet.findPreference(ADWLAUNCHER_PREF);
+	mADWLauncherPref.setOnPreferenceChangeListener(this);
 	mGalaxyLWPPref = (CheckBoxPreference) prefSet.findPreference(GALAXY_LWP_PREF);
 	mGalaxyLWPPref.setOnPreferenceChangeListener(this);
+	mFileManagerPref = (CheckBoxPreference) prefSet.findPreference(FILEMANAGER_PREF);
+	mFileManagerPref.setOnPreferenceChangeListener(this);
+	mSaveNumPref = (CheckBoxPreference) prefSet.findPreference(SAVENUM_PREF);
+	mSaveNumPref.setOnPreferenceChangeListener(this);
+	mTerminalPref = (CheckBoxPreference) prefSet.findPreference(TERMINAL_PREF);
+	mTerminalPref.setOnPreferenceChangeListener(this);
+	mTeslaFlashlitePref = (CheckBoxPreference) prefSet.findPreference(TESLA_FLASHLITE_PREF);
+	mTeslaFlashlitePref.setOnPreferenceChangeListener(this);
+	mTrackballAlertPref = (CheckBoxPreference) prefSet.findPreference(TRACKBALL_ALERT_PREF);
+	mTrackballAlertPref.setOnPreferenceChangeListener(this);
 
 	mOldApp2sdPref = (CheckBoxPreference) prefSet.findPreference(OLD_APP2SD_PREF);
 	mOldApp2sdPref.setOnPreferenceChangeListener(this);
@@ -451,15 +470,31 @@ public class SpareParts extends PreferenceActivity
 
 	// Current stock
 	mUiSoundsPref.setChecked(fileExists("/system/media/audio/ui/.bak"));
+
 	mCarHomePref.setChecked(fileExists("/system/app/CarHomeGoogle.apk"));
+	mCarHomePref.setEnabled(fileExists("/system/app/CarHomeGoogle.apk"));
 	mEmailPref.setChecked(fileExists("/system/app/EmailGoogle.apk"));
+	mEmailPref.setEnabled(fileExists("/system/app/EmailGoogle.apk"));
 	mFacebookPref.setChecked(fileExists("/system/app/Facebook.apk"));
+	mFacebookPref.setEnabled(fileExists("/system/app/Facebook.apk"));
 	mTwitterPref.setChecked(fileExists("/system/app/Twitter.apk"));
+	mTwitterPref.setEnabled(fileExists("/system/app/Twitter.apk"));
 	mYouTubePref.setChecked(fileExists("/system/app/YouTube.apk"));
-	mLauncher2Pref.setChecked(fileExists("/system/app/Launcher2.apk"));
+	mYouTubePref.setEnabled(fileExists("/system/app/YouTube.apk"));
+	mADWLauncherPref.setChecked(fileExists("/system/app/ADWLauncher.apk"));
+	mADWLauncherPref.setEnabled(fileExists("/system/app/ADWLauncher.apk"));
+	mFileManagerPref.setChecked(fileExists("/system/app/FileManager.apk"));
+	mFileManagerPref.setEnabled(fileExists("/system/app/FileManager.apk"));
+	mSaveNumPref.setChecked(fileExists("/system/app/SaveNum.apk"));
+	mSaveNumPref.setEnabled(fileExists("/system/app/SaveNum.apk"));
+	mTerminalPref.setChecked(fileExists("/system/app/Terminal.apk"));
+	mTerminalPref.setEnabled(fileExists("/system/app/Terminal.apk"));
+	mTeslaFlashlitePref.setChecked(fileExists("/system/app/TeslaFlashlite.apk"));
+	mTeslaFlashlitePref.setEnabled(fileExists("/system/app/TeslaFlashlite.apk"));
+	mTrackballAlertPref.setChecked(fileExists("/system/app/TrackballAlert.apk"));
+	mTrackballAlertPref.setEnabled(fileExists("/system/app/TrackballAlert.apk"));
 
 	// Current custom
-	mTrackballPref.setChecked(fileExists("/system/app/TrackballAlert.apk"));
 	if (!fileExists("/system/xbin/nouisounds")) {
 	    mUiSoundsPref.setEnabled(false);
 	    setStringSummary(UI_SOUNDS_PREF, "Script not found");
@@ -472,7 +507,6 @@ public class SpareParts extends PreferenceActivity
 	// Defaults
 	mFixPermsPref.setChecked(false);
 	mBootanimPref.setDefaultValue(1);
-	mGalaxyLWPPref.setChecked(true);
 
 	// ext relativ
 	if(!extfsIsMounted){
@@ -539,6 +573,48 @@ public class SpareParts extends PreferenceActivity
 	}
     }
 
+    public boolean removeSystemApp(CheckBoxPreference preference, final String name) {
+	if (!fileExists("/system/app/" + name + ".apk")) {
+	    popup("Error", name + " does not exists in /system/app!");
+	    return false;
+	}
+	String[] commands = {
+	    REMOUNT_RW,
+	    "busybox rm -f /system/app/" + name + ".apk",
+	    REMOUNT_RO
+	};
+	sendshell(commands, false, "Removing " + name + "...");
+	preference.setEnabled(false);
+	return true;
+    }
+
+    public boolean installOrRemoveAddon(CheckBoxPreference preference, final String src, final boolean reboot, final String name, final String activity) {
+	boolean have = preference.isChecked();
+	if (!have) {
+	    String[] commands = {
+		"busybox wget -q " + src + " -O /data/local/tmp/" + activity + ".apk" +
+		" && pm install -r /data/local/tmp/" + activity + ".apk ; busybox rm -f /data/local/tmp/" + activity + ".apk"
+	    };
+	    sendshell(commands, false, "Downloading and installing " + name + "...");
+	} else {
+	    if (fileExists("/system/app/" + name + ".apk")) {
+		String[] commands = {
+		    REMOUNT_RW,
+		    "busybox rm -f /system/app/" + name + ".apk",
+		    REMOUNT_RO
+		};
+		sendshell(commands, false, "Removing " + name + "...");
+	    }
+	    else {
+		String[] commands = {
+		    "pm uninstall " + activity
+		};
+		sendshell(commands, false, "Removing " + name + "...");
+	    }
+	}
+	return true;
+    }
+
     public boolean onPreferenceChange(Preference preference, Object objValue) {
 	if (preference == mWindowAnimationsPref) {
 	    writeAnimationPreference(0, objValue);
@@ -584,120 +660,65 @@ public class SpareParts extends PreferenceActivity
 		String[] commands = {
 		    "zaab off"
 		};
-		sendshell(commands, false, "Disactivating zipalign at boot...");
+		sendshell(commands, false, "Deactivating zipalign at boot...");
 	    }
 	}
 	else if (preference == mCarHomePref) {
-	    String[] commands = {
-		REMOUNT_RW,
-		"busybox rm -f /system/app/CarHomeGoogle.apk",
-		"busybox rm -f /system/app/CarHomeLauncher.apk",
-		REMOUNT_RO,
-	    };
-	    sendshell(commands, false, "Removing Car Home...");
+	    boolean have = mCarHomePref.isChecked();
+	    if (have) {
+		String[] commands = {
+		    REMOUNT_RW,
+		    "busybox rm -f /system/app/CarHomeGoogle.apk",
+		    "busybox rm -f /system/app/CarHomeLauncher.apk",
+		    REMOUNT_RO
+		};
+		sendshell(commands, false, "Removing CarHome...");
+	    }
 	}
-	else if (preference == mEmailPref) {
-	    String[] commands = {
-		REMOUNT_RW,
-		"busybox rm -f /system/app/EmailGoogle.apk",
-		REMOUNT_RO,
-	    };
-	    sendshell(commands, false, "Removing Email...");
-	}
-	else if (preference == mFacebookPref) {
-	    String[] commands = {
-		REMOUNT_RW,
-		"busybox rm -f /system/app/Facebook.apk",
-		REMOUNT_RO,
-	    };
-	    sendshell(commands, false, "Removing Facebook...");
-	}
-	else if (preference == mTwitterPref) {
-	    String[] commands = {
-		REMOUNT_RW,
-		"busybox rm -f /system/app/Twitter.apk",
-		REMOUNT_RO,
-	    };
-	    sendshell(commands, false, "Removing Twitter...");
-	}
-	else if (preference == mYouTubePref) {
-	    String[] commands = {
-		REMOUNT_RW,
-		"busybox rm -f /system/app/YouTube.apk",
-		REMOUNT_RO,
-	    };
-	    sendshell(commands, false, "Removing YouTube...");
-	}
+	else if (preference == mEmailPref)
+	    return removeSystemApp(mEmailPref, "EmailGoogle");
+	else if (preference == mFacebookPref)
+	    return removeSystemApp(mFacebookPref, "Facebook");
+	else if (preference == mTwitterPref)
+	    return removeSystemApp(mTwitterPref, "Twitter");
+	else if (preference == mYouTubePref)
+	    return removeSystemApp(mYouTubePref, "YouTube");
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
 		REMOUNT_RW,
-		"busybox wget -q " + REPO + objValue.toString() + " -O /data/local/tmp/bootanimation.zip",
-		"busybox mv /data/local/tmp/bootanimation.zip /system/media/bootanimation.zip",
-		REMOUNT_RO,
+		"busybox wget -q " + REPO + objValue.toString() + " -O /data/local/tmp/bootanimation.zip" +
+		" && busybox mv /data/local/tmp/bootanimation.zip /system/media/bootanimation.zip",
+		REMOUNT_RO
 	    };
-	    sendshell(commands, true, "Downloading and installing bootanimation...");
+	    sendshell(commands, true, "Downloading and installing " + objValue.toString() + "...");
 	}
-	else if (preference == mTrackballPref) {
-	    boolean have = mTrackballPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "busybox wget -q " + REPO + "trackball.apk -O /data/local/tmp/trackball.apk",
-		    "pm install -r /data/local/tmp/trackball.apk"
-		};
-		sendshell(commands, false, "Downloading and installing Trackball Alert...");
-	    } else {
-		String[] commands = {
-		    "pm uninstall uk.co.lilhermit.android.TrackballAlert"
-		};
-		sendshell(commands, false, "Removing Trackball Alert...");
-	    }
-	}
-	else if (preference == mRemvolPref) {
-	    boolean have = mRemvolPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "busybox wget -q " + REPO + "remvol.apk -O /data/local/tmp/remvol.apk",
-		    "pm install -r /data/local/tmp/remvol.apk"
-		};
-		sendshell(commands, false, "Downloading and installing RemVol...");
-	    } else {
-		String[] commands = {
-		    "pm uninstall com.too.remvol"
-		};
-		sendshell(commands, false, "Removing RemVol...");
-	    }
-	}
+	else if (preference == mFontsPref)
+	    return installOrRemoveAddon(mFontsPref, REPO + "Fonts.apk", false, "Fonts", "com.betterandroid.fonts");
 	else if (preference == mWakePref) {
-	    boolean have = mWakePref.isChecked();
-	    if (!have) {
+	    boolean rt = installOrRemoveAddon(mWakePref, REPO + "wake.apk", true, "myLock", "i4nc4mp.myLock.froyo");
+	    if (mWakePref.isChecked()) {
 		String[] commands = {
-		    "busybox wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk",
-		    "pm install -r /data/local/tmp/wake.apk",
 		    REMOUNT_RW,
-		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml",
-		    "busybox mkdir -p /data/data/i4nc4mp.myLock.froyo/shared_prefs",
-		    "busybox mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
-		    REMOUNT_RO,
+		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml" +
+		    " && busybox mkdir -p /data/data/i4nc4mp.myLock.froyo/shared_prefs" +
+		    " && busybox mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
+		    REMOUNT_RO
 		};
-		sendshell(commands, false, "Downloading and installing myLock...");
-	    } else {
-		String[] commands = {
-		    "pm uninstall i4nc4mp.myLock.froyo"
-		};
-		sendshell(commands, false, "Removing myLock...");
+		sendshell(commands, false, "Downloading and configuring myLock...");
 	    }
 	}
 	else if (preference == mHtcImePref) {
 	    boolean have = mHtcImePref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "busybox wget -q " + REPO + "clicker.apk -O /data/local/tmp/clicker.apk",
-		    "pm install -r /data/local/tmp/clicker.apk",
-		    "busybox wget -q " + REPO + "htc_ime.apk -O /data/local/tmp/htc_ime.apk",
-		    "pm install -r /data/local/tmp/htc_ime.apk"
+		    "busybox wget -q " + REPO + "clicker.apk -O /data/local/tmp/clicker.apk" +
+		    " && pm install -r /data/local/tmp/clicker.apk ; busybox rm -f /data/local/tmp/clicker.apk",
+		    "busybox wget -q " + REPO + "htc_ime.apk -O /data/local/tmp/htc_ime.apk" +
+		    " && pm install -r /data/local/tmp/htc_ime.apk ; busybox rm -f /data/local/tmp/htc_ime.apk"
 		};
 		sendshell(commands, false, "Downloading and installing HTC_IME...");
-	    } else {
+	    }
+	    else {
 		String[] commands = {
 		    "pm uninstall com.htc.clicker",
 		    "pm uninstall jonasl.ime"
@@ -705,64 +726,45 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, false, "Removing HTC_IME...");
 	    }
 	}
-	else if (preference == mCpuLedPref) {
-	    boolean have = mCpuLedPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "busybox wget -q " + REPO + "cpu_led.apk -O /data/local/tmp/cpu_led.apk",
-		    "pm install -r /data/local/tmp/cpu_led.apk",
-		};
-		sendshell(commands, false, "Downloading and installing NetMeter+LED...");
-	    } else {
-		String[] commands = {
-		    "pm uninstall com.google.android.netmeterled"
-		};
-		sendshell(commands, false, "Removing NetMeter+LED...");
-	    }
-	}
-	else if (preference == mLauncher2Pref) {
-	    boolean have = mLauncher2Pref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    REMOUNT_RW,
-		    "busybox wget -q " + REPO + "Launcher2.apk -O /data/local/tmp/Launcher2.apk",
-		    "busybox mv /data/local/tmp/Launcher2.apk /system/app/Launcher2.apk",
-		    REMOUNT_RO,
-		};
-		sendshell(commands, false, "Downloading and installing stock Launcher2...");
-	    } else {
-		String[] commands = {
-		    REMOUNT_RW,
-		    "busybox rm /system/app/Launcher2.apk",
-		    REMOUNT_RO,
-		};
-		sendshell(commands, false, "Removing stock Launcher2...");
-	    }
-	}
+	else if (preference == mCpuLedPref)
+	    return installOrRemoveAddon(mCpuLedPref, REPO + "cpu_led.apk", false, "CPU Led", "com.google.android.netmeterled");
+	else if (preference == mADWLauncherPref)
+	    return installOrRemoveAddon(mCpuLedPref, REPO + "ADWLauncher.apk", false, "ADWLauncher", "org.adw.launcher");
 	else if (preference == mGalaxyLWPPref) {
 	    boolean have = mGalaxyLWPPref.isChecked();
 	    if (!have) {
 		String[] commands = {
-		    "busybox wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk",
-		    "pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk",
-		    "busybox wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk",
-		    "pm install -r /data/local/tmp/TATLiveWallpapersBlueSea.apk",
-		    "busybox wget -q " + REPO + "TATLiveWallpapersDandelion.apk -O /data/local/tmp/TATLiveWallpapersDandelion.apk",
-		    "pm install -r /data/local/tmp/TATLiveWallpapersDandelion.apk",
-		    "busybox wget -q " + REPO + "TATLiveWallpapersOceanWave.apk -O /data/local/tmp/TATLiveWallpapersOceanWave.apk",
-		    "pm install -r /data/local/tmp/TATLiveWallpapersOceanWave.apk"
+		    "busybox wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk" +
+		    " && pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersAurora.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk" +
+		    " && pm install -r /data/local/tmp/TATLiveWallpapersBlueSea.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersBlueSea.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersDandelion.apk -O /data/local/tmp/TATLiveWallpapersDandelion.apk" +
+		    " && pm install -r /data/local/tmp/TATLiveWallpapersDandelion.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersDandelion.apk",
+		    "busybox wget -q " + REPO + "TATLiveWallpapersOceanWave.apk -O /data/local/tmp/TATLiveWallpapersOceanWave.apk" +
+		    " && pm install -r /data/local/tmp/TATLiveWallpapersOceanWave.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersOceanWave.apk"
 		};
-		sendshell(commands, false, "Downloading and installing Galaxy LWPs...");
-	    } else {
+		sendshell(commands, true, "Downloading and installing Galaxy-S LWPs...");
+	    }
+	    else {
 		String[] commands = {
 		    "pm uninstall com.tat.livewallpaper.aurora",
-		    "pm uninstall com.tat.livewallpaper.dandelion",
 		    "pm uninstall com.tat.livewallpaper.bluesea",
-		    "pm uninstall com.tat.livewallpaper.oceanwave"
+		    "pm uninstall com.tat.livewallpaper.dandelion",
+		    "pm uninstall com.tat.livewallpaper.oceanwaves"
 		};
-		sendshell(commands, false, "Removing Galaxy LWPs...");
+		sendshell(commands, false, "Removing Galaxy-S LWPs...");
 	    }
 	}
+	else if (preference == mFileManagerPref)
+	    return removeSystemApp(mFileManagerPref, "FileManager");
+	else if (preference == mSaveNumPref)
+	    return removeSystemApp(mSaveNumPref, "SaveNum");
+	else if (preference == mTerminalPref)
+	    return removeSystemApp(mTerminalPref, "Terminal");
+	else if (preference == mTeslaFlashlitePref)
+	    return removeSystemApp(mTeslaFlashlitePref, "TeslaFlashlite");
+	else if (preference == mTrackballAlertPref)
+	    return removeSystemApp(mTrackballAlertPref, "TrackballAlert");
 	else if (preference == mOldApp2sdPref) {
 	    boolean have = mOldApp2sdPref.isChecked();
 	    if (!have) {
@@ -798,9 +800,7 @@ public class SpareParts extends PreferenceActivity
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 	if (preference == mCompatibilityMode) {
-	    Settings.System.putInt(getContentResolver(),
-		    Settings.System.COMPATIBILITY_MODE,
-		    mCompatibilityMode.isChecked() ? 1 : 0);
+	    Settings.System.putInt(getContentResolver(), Settings.System.COMPATIBILITY_MODE, mCompatibilityMode.isChecked() ? 1 : 0);
 	    return true;
 	}
 	return false;
@@ -826,8 +826,7 @@ public class SpareParts extends PreferenceActivity
     public void writeEndButtonPreference(Object objValue) {
 	try {
 	    int val = Integer.parseInt(objValue.toString());
-	    Settings.System.putInt(getContentResolver(),
-		    Settings.System.END_BUTTON_BEHAVIOR, val);
+	    Settings.System.putInt(getContentResolver(), Settings.System.END_BUTTON_BEHAVIOR, val);
 	} catch (NumberFormatException e) {
 	}
     }

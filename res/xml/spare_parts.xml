@@ -1,473 +1,509 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-/*
- * Copyright 2008, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
--->
+   /*
+   * Copyright 2008, The Android Open Source Project
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *     http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-<PreferenceCategory
-   android:title="Software">
+  <PreferenceCategory
+     android:title="Software">
 
-  <PreferenceScreen
-     android:title="ROM infos"
-     android:summary="ROM name, build and system version.">
+    <PreferenceScreen
+       android:title="ROM infos"
+       android:summary="ROM name, build and system version.">
 
-    <PreferenceCategory
-       android:title="Infos">
+      <PreferenceCategory
+	 android:title="Infos">
+
+	<PreferenceScreen
+	   android:key="rom_name"
+	   android:title="Name"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="rom_version"
+	   android:title="Version"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="rom_build"
+	   android:title="Build / Fingerprint"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="rom_sys_version"
+	   android:title="System version"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="rom_kernel"
+	   android:title="Kernel"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="rom_radio"
+	   android:title="Radio"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="Updates">
+
+	<PreferenceScreen
+	   android:key="rom_update"
+	   android:title="Check for update"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:title="Tweaks"
+       android:summary="Tweaks &amp; scripts">
+
+      <PreferenceCategory
+	 android:title="Stock">
+
+	<ListPreference
+	   android:key="app2sd"
+	   android:title="Stock App2SD"
+	   android:summary=" Where to store apps"
+	   android:entries="@array/entries_app2sd"
+	   android:entryValues="@array/entryvalues_app2sd"
+	   android:defaultValue="0"
+	   android:dialogTitle="Select an option" />
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="Advanced">
+
+	<CheckBoxPreference
+	   android:key="ui_sounds"
+	   android:title="UI sounds"
+	   android:summaryOn=" UI sounds disable"
+	   android:summaryOff=" UI sounds enable" />
+
+	<CheckBoxPreference
+	   android:key="fix_perms"
+	   android:title="Fix permissions"
+	   android:summaryOn=" Permissions fixed"
+	   android:summaryOff=" Can resolve weired FC" />
+
+	<CheckBoxPreference
+	   android:key="zipalign"
+	   android:title="ZipAlign APKs"
+	   android:summaryOn=" zipalign launch at boot"
+	   android:summaryOff=" zipalign not launch at boot" />
+
+      </PreferenceCategory>
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:title="Quick commands"
+       android:summary="Reboot &amp; remount commands">
+
+      <PreferenceCategory
+	 android:title="Reboot">
+
+	<PreferenceScreen
+	   android:key="reboot_reboot"
+	   android:title="Reboot"
+	   android:summary=" Do a normal reboot">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="reboot_recovery"
+	   android:title="Reboot recovery"
+	   android:summary=" Reboot into recovery">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="reboot_bootloader"
+	   android:title="Reboot bootloader"
+	   android:summary=" Reboot into bootloader">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="Remount /system">
+
+	<PreferenceScreen
+	   android:key="remount_rw"
+	   android:title="Read-Write"
+	   android:summary=" Remount /system with RW permissions">
+	</PreferenceScreen>
+	<PreferenceScreen
+	   android:key="remount_ro"
+	   android:title="Read-Only"
+	   android:summary=" Remount /system with RO permissions">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:title="Apps &amp; Addons"
+       android:summary="Install/remove stock apps &amp; addons">
 
       <PreferenceScreen
-	 android:key="rom_name"
-	 android:title="Name"
-	 android:summary=" Unavailable">
+	 android:title="Stock apps"
+	 android:summary="Stock apps that you can add/remove">
+
+	<CheckBoxPreference
+	   android:key="car_home"
+	   android:title="Car Home"
+	   android:summaryOn=" Car Home installed"
+	   android:summaryOff=" Car Home not installed" />
+
+	<CheckBoxPreference
+	   android:key="email"
+	   android:title="Email"
+	   android:summaryOn=" Email installed"
+	   android:summaryOff=" Email not installed" />
+
+	<CheckBoxPreference
+	   android:key="facebook"
+	   android:title="Facebook"
+	   android:summaryOn=" Facebook installed"
+	   android:summaryOff=" Facebook not installed" />
+
+	<CheckBoxPreference
+	   android:key="twitter"
+	   android:title="Twitter"
+	   android:summaryOn=" Twitter installed"
+	   android:summaryOff=" Twitter not installed" />
+
+	<CheckBoxPreference
+	   android:key="youtube"
+	   android:title="Youtube"
+	   android:summaryOn=" Youtube installed"
+	   android:summaryOff=" Youtube not installed" />
+
       </PreferenceScreen>
 
       <PreferenceScreen
-	 android:key="rom_version"
+	 android:title="Integrated addons"
+	 android:summary="Additional apps installed by default">
+
+	<CheckBoxPreference
+	   android:key="adwlauncher"
+	   android:title="ADWLauncher"
+	   android:summaryOn=" ADWLauncher installed"
+	   android:summaryOff=" ADWLauncher not installed" />
+
+	<CheckBoxPreference
+	   android:key="filemanager"
+	   android:title="File manager"
+	   android:summaryOn=" File manager installed"
+	   android:summaryOff=" File manager not installed" />
+
+	<CheckBoxPreference
+	   android:key="savenum"
+	   android:title="SaveNum"
+	   android:summaryOn=" SaveNum installed"
+	   android:summaryOff=" SaveNum not installed" />
+
+	<CheckBoxPreference
+	   android:key="terminal"
+	   android:title="Terminal"
+	   android:summaryOn=" Terminal installed"
+	   android:summaryOff=" Terminal not installed" />
+
+	<CheckBoxPreference
+	   android:key="tesla_flashlite"
+	   android:title="Tesla flashlite"
+	   android:summaryOn=" Tesla flashlite installed"
+	   android:summaryOff=" Tesla flashlite not installed" />
+
+	<CheckBoxPreference
+	   android:key="trackball_alert"
+	   android:title="Trackball Alert"
+	   android:summaryOn=" Trackball Alert installed"
+	   android:summaryOff=" Trackball Alert not installed" />
+
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:title="Addons"
+	 android:summary="Apps to boost user experience">
+
+	<ListPreference
+	   android:key="bootanim"
+	   android:title="Bootanimation"
+	   android:summary=" Change the bootanimation"
+	   android:entries="@array/entries_bootanim"
+	   android:entryValues="@array/entryvalues_bootanim"
+	   android:dialogTitle="Select an option" />
+
+	<CheckBoxPreference
+	   android:key="wake"
+	   android:title="Trackball Wake"
+	   android:summaryOn=" myLock installed"
+	   android:summaryOff=" myLock not installed" />
+
+	<CheckBoxPreference
+	   android:key="fonts"
+	   android:title="Additional fonts"
+	   android:summaryOn=" Fonts installed"
+	   android:summaryOff=" Fonts not installed" />
+
+	<CheckBoxPreference
+	   android:key="htc_ime"
+	   android:title="HTC_IME keyboard"
+	   android:summaryOn=" HTC_IME installed"
+	   android:summaryOff=" HTC_IME not installed" />
+
+	<CheckBoxPreference
+	   android:key="cpu_led"
+	   android:title="%CPU LED monitor"
+	   android:summaryOn=" NetMeter+LED installed"
+	   android:summaryOff=" NetMeter+LED not installed" />
+
+	<CheckBoxPreference
+	   android:key="galaxy_lwp"
+	   android:title="Samsung Galaxy LWPs"
+	   android:summaryOn=" Galaxy LWPs installed"
+	   android:summaryOff=" Galaxy LWPs not installed" />
+
+      </PreferenceScreen>
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+       android:title="About"
+       android:summary="About this Modded SpareParts">
+
+      <PreferenceScreen
+	 android:key="about_version"
 	 android:title="Version"
-	 android:summary=" Unavailable">
+	 android:summary=" SparePartsMod v5">
       </PreferenceScreen>
 
       <PreferenceScreen
-	 android:key="rom_build"
-	 android:title="Build / Fingerprint"
-	 android:summary=" Unavailable">
+	 android:key="about_author"
+	 android:title="Author"
+	 android:summary=" leonnib4 @ xda-developers.com">
       </PreferenceScreen>
 
       <PreferenceScreen
-	 android:key="rom_sys_version"
-	 android:title="System version"
-	 android:summary=" Unavailable">
+	 android:key="about_donate"
+	 android:title="Donate"
+	 android:summary=" Donate via PayPal">
       </PreferenceScreen>
 
       <PreferenceScreen
-	 android:key="rom_kernel"
-	 android:title="Kernel"
-	 android:summary=" Unavailable">
+	 android:key="about_sources"
+	 android:title="Sources"
+	 android:summary=" http://github.com/leonnib4/">
       </PreferenceScreen>
 
-      <PreferenceScreen
-	 android:key="rom_radio"
-	 android:title="Radio"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="Updates">
-
-      <PreferenceScreen
-	 android:key="rom_update"
-	 android:title="Check for update"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-  </PreferenceScreen>
-
-  <PreferenceScreen
-     android:title="Tweaks"
-     android:summary="Tweaks &amp; scripts">
-
-    <PreferenceCategory
-       android:title="Stock">
-
-      <ListPreference
-	 android:key="app2sd"
-	 android:title="Stock App2SD"
-	 android:summary=" Where to store apps"
-	 android:entries="@array/entries_app2sd"
-	 android:entryValues="@array/entryvalues_app2sd"
-	 android:defaultValue="0"
-	 android:dialogTitle="Select an option" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="Advanced">
-
-      <CheckBoxPreference
-	 android:key="ui_sounds"
-	 android:title="UI sounds"
-	 android:summaryOn=" UI sounds disable"
-	 android:summaryOff=" UI sounds enable" />
-
-      <CheckBoxPreference
-	 android:key="fix_perms"
-	 android:title="Fix permissions"
-	 android:summaryOn=" Permissions fixed"
-	 android:summaryOff=" Can resolve weired FC" />
-
-      <CheckBoxPreference
-	 android:key="zipalign"
-	 android:title="ZipAlign APKs"
-	 android:summaryOn=" zipalign launch at boot"
-	 android:summaryOff=" zipalign not launch at boot" />
-
-    </PreferenceCategory>
-
-  </PreferenceScreen>
-
-  <PreferenceScreen
-     android:title="Quick commands"
-     android:summary="Reboot &amp; remount commands">
-
-    <PreferenceCategory
-       android:title="Reboot">
-
-      <PreferenceScreen
-	 android:key="reboot_reboot"
-	 android:title="Reboot"
-	 android:summary=" Do a normal reboot">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="reboot_recovery"
-	 android:title="Reboot recovery"
-	 android:summary=" Reboot into recovery">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="reboot_bootloader"
-	 android:title="Reboot bootloader"
-	 android:summary=" Reboot into bootloader">
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="Remount /system">
-
-      <PreferenceScreen
-	 android:key="remount_rw"
-	 android:title="Read-Write"
-	 android:summary=" Remount /system with RW permissions">
-      </PreferenceScreen>
-      <PreferenceScreen
-	 android:key="remount_ro"
-	 android:title="Read-Only"
-	 android:summary=" Remount /system with RO permissions">
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-  </PreferenceScreen>
-
-  <PreferenceScreen
-     android:title="Stock apps"
-     android:summary="Stock apps that you can add/remove">
-
-    <CheckBoxPreference
-       android:key="car_home"
-       android:title="Car Home"
-       android:summaryOn=" Car Home installed"
-       android:summaryOff=" Car Home not installed" />
-
-    <CheckBoxPreference
-       android:key="email"
-       android:title="Email"
-       android:summaryOn=" Email installed"
-       android:summaryOff=" Email not installed" />
-
-    <CheckBoxPreference
-       android:key="facebook"
-       android:title="Facebook"
-       android:summaryOn=" Facebook installed"
-       android:summaryOff=" Facebook not installed" />
-
-    <CheckBoxPreference
-       android:key="twitter"
-       android:title="Twitter"
-       android:summaryOn=" Twitter installed"
-       android:summaryOff=" Twitter not installed" />
-
-    <CheckBoxPreference
-       android:key="youtube"
-       android:title="Youtube"
-       android:summaryOn=" Youtube installed"
-       android:summaryOff=" Youtube not installed" />
-
-  </PreferenceScreen>
-
-  <PreferenceScreen
-     android:title="Addons"
-     android:summary="Apps to boost user experience">
-
-    <ListPreference
-       android:key="bootanim"
-       android:title="Bootanimation"
-       android:summary=" Change the bootanimation"
-       android:entries="@array/entries_bootanim"
-       android:entryValues="@array/entryvalues_bootanim"
-       android:dialogTitle="Select an option" />
-
-    <CheckBoxPreference
-       android:key="trackball"
-       android:title="Trackball Alert"
-       android:summaryOn=" Trackball Alert installed"
-       android:summaryOff=" Trackball Alert not installed" />
-
-    <CheckBoxPreference
-       android:key="remvol"
-       android:title="Headset volume ctrl."
-       android:summaryOn=" Remvol installed"
-       android:summaryOff=" Remvol not installed" />
-
-    <CheckBoxPreference
-       android:key="wake"
-       android:title="Trackball Wake"
-       android:summaryOn=" myLock installed"
-       android:summaryOff=" myLock not installed" />
-
-    <CheckBoxPreference
-       android:key="htc_ime"
-       android:title="HTC_IME keyboard"
-       android:summaryOn=" HTC_IME installed"
-       android:summaryOff=" HTC_IME not installed" />
-
-    <CheckBoxPreference
-       android:key="cpu_led"
-       android:title="%CPU LED monitor"
-       android:summaryOn=" NetMeter+LED installed"
-       android:summaryOff=" NetMeter+LED not installed" />
-
-    <CheckBoxPreference
-       android:key="launcher2"
-       android:title="Restore Launcher2"
-       android:summaryOn=" Launcher2 installed"
-       android:summaryOff=" Launcher2 not installed" />
-
-    <CheckBoxPreference
-       android:key="galaxy_lwp"
-       android:title="Samsung Galaxy LWPs"
-       android:summaryOn=" Galaxy LWPs installed"
-       android:summaryOff=" Galaxy LWPs not installed" />
-
-  </PreferenceScreen>
-
-  <PreferenceScreen
-     android:title="About"
-     android:summary="About this Modded SpareParts">
-
-    <PreferenceScreen
-       android:key="about_version"
-       android:title="Version"
-       android:summary=" Modded SpareParts v5 for FroYo-based ROMS">
     </PreferenceScreen>
 
-    <PreferenceScreen
-       android:key="about_author"
-       android:title="Author"
-       android:summary=" leonnib4 @ xda-developers.com">
-    </PreferenceScreen>
+  </PreferenceCategory>
+
+  <PreferenceCategory
+     android:title="Hardware">
 
     <PreferenceScreen
-       android:key="about_donate"
-       android:title="Donate"
-       android:summary=" Donate via PayPal">
+       android:title="Data Storage Options"
+       android:summary="Storage, App2sd, Dalvik-Cache &amp; Zipalign">
+
+      <PreferenceCategory
+	 android:title="Storage Sizes">
+
+	<PreferenceScreen
+	   android:key="system_storage_levels"
+	   android:title="/system"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="data_storage_levels"
+	   android:title="/data"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="cache_storage_levels"
+	   android:title="/cache"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="sdcardfat_storage_levels"
+	   android:title="SDCARD - FAT32 partition"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+	<PreferenceScreen
+	   android:key="sdcardext_storage_levels"
+	   android:title="SDCARD - EXT3 partition"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="Refresh">
+
+	<PreferenceScreen
+	   android:key="refresh"
+	   android:title=" Refresh storage data"
+	   android:summary="">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="App2SD / Dalvik-Cache">
+
+	<CheckBoxPreference
+	   android:key="app2sd_opt"
+	   android:title="Old App2SD"
+	   android:summaryOn=" Old App2SD enabled"
+	   android:summaryOff=" Old App2SD disabled"/>
+
+	<CheckBoxPreference
+	   android:key="dalvik2sd_opt"
+	   android:title="Dalvik-Cache on SDCard"
+	   android:summaryOn=" Dalvik-Cache on sdcard"
+	   android:summaryOff=" Dalvik-Cache on /data"/>
+
+      </PreferenceCategory>
+
     </PreferenceScreen>
+
+  </PreferenceCategory>
+
+  <PreferenceCategory
+     android:title="Stock SpareParts">
 
     <PreferenceScreen
-       android:key="about_sources"
-       android:title="Sources"
-       android:summary=" http://github.com/leonnib4/">
+       android:title="Basic SpareParts settings">
+
+      <PreferenceCategory
+	 android:title="@string/device_info_title">
+
+	<PreferenceScreen android:key="battery_history_settings"
+			  android:title="@string/title_battery_history"
+			  android:summary="@string/summary_battery_history">
+	  <intent android:action="android.intent.action.MAIN"
+		  android:targetPackage="com.android.settings"
+		  android:targetClass="com.android.settings.battery_history.BatteryHistory" />
+	</PreferenceScreen>
+
+	<PreferenceScreen android:key="battery_information_settings"
+			  android:title="@string/title_battery_information"
+			  android:summary="@string/summary_battery_information">
+	  <intent android:action="android.intent.action.MAIN"
+		  android:targetPackage="com.android.settings"
+		  android:targetClass="com.android.settings.BatteryInfo" />
+	</PreferenceScreen>
+
+	<PreferenceScreen android:key="usage_statistics_settings"
+			  android:title="@string/title_usage_statistics"
+			  android:summary="@string/summary_usage_statistics">
+	  <intent android:action="android.intent.action.MAIN"
+		  android:targetPackage="com.android.settings"
+		  android:targetClass="com.android.settings.UsageStats" />
+	</PreferenceScreen>
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="@string/general_title">
+
+	<ListPreference
+	   android:key="window_animations"
+	   android:title="@string/title_window_animations"
+	   android:summary="@string/summary_window_animations"
+	   android:entries="@array/entries_animations"
+	   android:entryValues="@array/entryvalues_animations"
+	   android:dialogTitle="@string/dialog_title_window_animations" />
+
+	<ListPreference
+	   android:key="transition_animations"
+	   android:title="@string/title_transition_animations"
+	   android:summary="@string/summary_transition_animations"
+	   android:entries="@array/entries_animations"
+	   android:entryValues="@array/entryvalues_animations"
+	   android:dialogTitle="@string/dialog_title_transition_animations" />
+
+	<CheckBoxPreference
+	   android:key="fancy_ime_animations"
+	   android:title="@string/title_fancy_ime_animations"
+	   android:summaryOn="@string/summary_on_fancy_ime_animations"
+	   android:summaryOff="@string/summary_off_fancy_ime_animations"/>
+
+	<ListPreference
+	   android:key="font_size"
+	   android:title="@string/title_font_size"
+	   android:summary="@string/summary_font_size"
+	   android:entries="@array/entries_font_size"
+	   android:entryValues="@array/entryvalues_font_size"
+	   android:dialogTitle="@string/dialog_title_font_size" />
+
+	<ListPreference
+	   android:key="end_button"
+	   android:title="@string/title_end_button"
+	   android:summary="@string/summary_end_button"
+	   android:entries="@array/entries_end_button"
+	   android:entryValues="@array/entryvalues_end_button"
+	   android:dialogTitle="@string/dialog_title_end_button" />
+
+	<CheckBoxPreference
+	   android:key="haptic_feedback"
+	   android:title="@string/title_haptic_feedback"
+	   android:summaryOn="@string/summary_on_haptic_feedback"
+	   android:summaryOff="@string/summary_off_haptic_feedback"/>
+
+	<CheckBoxPreference
+	   android:key="compatibility_mode"
+	   android:title="@string/compatibility_mode_title"
+	   android:summaryOn="@string/compatibility_mode_summary_on"
+	   android:summaryOff="@string/compatibility_mode_summary_off" />
+
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="@string/applications_title">
+
+	<CheckBoxPreference
+	   android:key="maps_compass"
+	   android:title="@string/title_maps_compass"
+	   android:summaryOn="@string/summary_on_maps_compass"
+	   android:summaryOff="@string/summary_off_maps_compass"/>
+
+      </PreferenceCategory>
+
     </PreferenceScreen>
 
-  </PreferenceScreen>
-
-</PreferenceCategory>
-
-<PreferenceCategory
-   android:title="Hardware">
-
-  <PreferenceScreen
-     android:title="Data Storage Options"
-     android:summary="Storage, App2sd, Dalvik-Cache &amp; Zipalign">
-
-    <PreferenceCategory
-       android:title="Storage Sizes">
-
-      <PreferenceScreen
-	 android:key="system_storage_levels"
-	 android:title="/system"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="data_storage_levels"
-	 android:title="/data"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="cache_storage_levels"
-       android:title="/cache"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="sdcardfat_storage_levels"
-	 android:title="SDCARD - FAT32 partition"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-      <PreferenceScreen
-	 android:key="sdcardext_storage_levels"
-	 android:title="SDCARD - EXT3 partition"
-	 android:summary=" Unavailable">
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="Refresh">
-
-      <PreferenceScreen
-	 android:key="refresh"
-	 android:title=" Refresh storage data"
-	 android:summary="">
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="App2SD / Dalvik-Cache">
-
-      <CheckBoxPreference
-	 android:key="app2sd_opt"
-	 android:title="Old App2SD"
-	 android:summaryOn=" Old App2SD enabled"
-	 android:summaryOff=" Old App2SD disabled"/>
-
-      <CheckBoxPreference
-	 android:key="dalvik2sd_opt"
-	 android:title="Dalvik-Cache on SDCard"
-	 android:summaryOn=" Dalvik-Cache on sdcard"
-	 android:summaryOff=" Dalvik-Cache on /data"/>
-
-    </PreferenceCategory>
-
-  </PreferenceScreen>
-
-</PreferenceCategory>
-
-<PreferenceCategory
-   android:title="Stock SpareParts">
-
-  <PreferenceScreen
-     android:title="Basic SpareParts settings">
-
-    <PreferenceCategory
-       android:title="@string/device_info_title">
-
-      <PreferenceScreen android:key="battery_history_settings"
-			android:title="@string/title_battery_history"
-			android:summary="@string/summary_battery_history">
-	<intent android:action="android.intent.action.MAIN"
-		android:targetPackage="com.android.settings"
-		android:targetClass="com.android.settings.battery_history.BatteryHistory" />
-      </PreferenceScreen>
-
-      <PreferenceScreen android:key="battery_information_settings"
-			android:title="@string/title_battery_information"
-			android:summary="@string/summary_battery_information">
-	<intent android:action="android.intent.action.MAIN"
-		android:targetPackage="com.android.settings"
-		android:targetClass="com.android.settings.BatteryInfo" />
-      </PreferenceScreen>
-
-      <PreferenceScreen android:key="usage_statistics_settings"
-			android:title="@string/title_usage_statistics"
-			android:summary="@string/summary_usage_statistics">
-	<intent android:action="android.intent.action.MAIN"
-		android:targetPackage="com.android.settings"
-		android:targetClass="com.android.settings.UsageStats" />
-      </PreferenceScreen>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="@string/general_title">
-
-      <ListPreference
-	 android:key="window_animations"
-	 android:title="@string/title_window_animations"
-	 android:summary="@string/summary_window_animations"
-	 android:entries="@array/entries_animations"
-	 android:entryValues="@array/entryvalues_animations"
-	 android:dialogTitle="@string/dialog_title_window_animations" />
-
-      <ListPreference
-	 android:key="transition_animations"
-	 android:title="@string/title_transition_animations"
-	 android:summary="@string/summary_transition_animations"
-	 android:entries="@array/entries_animations"
-	 android:entryValues="@array/entryvalues_animations"
-	 android:dialogTitle="@string/dialog_title_transition_animations" />
-
-      <CheckBoxPreference
-	 android:key="fancy_ime_animations"
-	 android:title="@string/title_fancy_ime_animations"
-	 android:summaryOn="@string/summary_on_fancy_ime_animations"
-	 android:summaryOff="@string/summary_off_fancy_ime_animations"/>
-
-      <ListPreference
-	 android:key="font_size"
-	 android:title="@string/title_font_size"
-	 android:summary="@string/summary_font_size"
-	 android:entries="@array/entries_font_size"
-	 android:entryValues="@array/entryvalues_font_size"
-	 android:dialogTitle="@string/dialog_title_font_size" />
-
-      <ListPreference
-	 android:key="end_button"
-	 android:title="@string/title_end_button"
-	 android:summary="@string/summary_end_button"
-	 android:entries="@array/entries_end_button"
-	 android:entryValues="@array/entryvalues_end_button"
-	 android:dialogTitle="@string/dialog_title_end_button" />
-
-      <CheckBoxPreference
-	 android:key="haptic_feedback"
-	 android:title="@string/title_haptic_feedback"
-	 android:summaryOn="@string/summary_on_haptic_feedback"
-	 android:summaryOff="@string/summary_off_haptic_feedback"/>
-
-      <CheckBoxPreference
-	 android:key="compatibility_mode"
-	 android:title="@string/compatibility_mode_title"
-	 android:summaryOn="@string/compatibility_mode_summary_on"
-	 android:summaryOff="@string/compatibility_mode_summary_off" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-       android:title="@string/applications_title">
-
-      <CheckBoxPreference
-	 android:key="maps_compass"
-	 android:title="@string/title_maps_compass"
-	 android:summaryOn="@string/summary_on_maps_compass"
-	 android:summaryOff="@string/summary_off_maps_compass"/>
-
-    </PreferenceCategory>
-
-  </PreferenceScreen>
-
-</PreferenceCategory>
+  </PreferenceCategory>
 
 </PreferenceScreen>

@@ -47,12 +47,10 @@ public class ShellInterface extends Thread {
 	    res.add(e.getMessage());
 	} finally {
 	    try {
-		if (os != null) {
+		if (os != null)
 		    os.close();
-		}
-		if (osRes != null) {
+		if (osRes != null)
 		    osRes.close();
-		}
 		process.destroy();
 	    } catch (Exception e) {
 		// nothing
