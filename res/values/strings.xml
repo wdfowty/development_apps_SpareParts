@@ -18,7 +18,7 @@
 */
 -->
 <resources>
-    <string name="app_label">Spare Parts</string>
+    <string name="app_label">Leo Parts</string>
 
     <string name="repo_name">default</string>
     <string name="repo_url">http://android.shk-desktop.com/SpareParts/</string>

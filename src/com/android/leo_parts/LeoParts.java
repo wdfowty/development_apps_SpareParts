@@ -15,9 +15,9 @@
 ** limitations under the License.
 */
 
-package com.android.spare_parts;
+package com.android.leo_parts;
 
-import com.android.spare_parts.ShellInterface;
+import com.android.leo_parts.ShellInterface;
 
 import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
@@ -64,10 +64,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class SpareParts extends PreferenceActivity
-	implements Preference.OnPreferenceChangeListener,
-	SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = "SpareParts";
+public class LeoParts extends PreferenceActivity
+    implements Preference.OnPreferenceChangeListener {
+    private static final String TAG = "LeoParts";
     private static final String REMOUNT_RO = "mount -o ro,remount -t yaffs2 /dev/block/mtdblock3 /system";
     private static final String REMOUNT_RW = "mount -o rw,remount -t yaffs2 /dev/block/mtdblock3 /system";
     private static String REPO;
@@ -149,19 +148,6 @@ public class SpareParts extends PreferenceActivity
     private static final String ABOUT_AUTHOR = "about_author";
     private static final String ABOUT_DONATE = "about_donate";
     private static final String ABOUT_SOURCES = "about_sources";
-
-    private static final String BATTERY_HISTORY_PREF = "battery_history_settings";
-    private static final String BATTERY_INFORMATION_PREF = "battery_information_settings";
-    private static final String USAGE_STATISTICS_PREF = "usage_statistics_settings";
-
-    private static final String WINDOW_ANIMATIONS_PREF = "window_animations";
-    private static final String TRANSITION_ANIMATIONS_PREF = "transition_animations";
-    private static final String FANCY_IME_ANIMATIONS_PREF = "fancy_ime_animations";
-    private static final String HAPTIC_FEEDBACK_PREF = "haptic_feedback";
-    private static final String FONT_SIZE_PREF = "font_size";
-    private static final String END_BUTTON_PREF = "end_button";
-    private static final String MAPS_COMPASS_PREF = "maps_compass";
-    private static final String KEY_COMPATIBILITY_MODE = "compatibility_mode";
 
     private final Configuration mCurConfig = new Configuration();
 
@@ -265,7 +251,7 @@ public class SpareParts extends PreferenceActivity
     @Override
     public void onCreate(Bundle icicle) {
 	super.onCreate(icicle);
-	addPreferencesFromResource(R.xml.spare_parts);
+	addPreferencesFromResource(R.xml.leo_parts);
 
 	if (!fileExists("/system/bin/su") && !fileExists("/system/xbin/su"))
 	    bad("Full root requiered", "This SpareParts Mod NEEDS full root!\n\n - su binary\n - Superuser.apk\n - busybox binary");
@@ -479,21 +465,6 @@ public class SpareParts extends PreferenceActivity
 		    }
 		});
 
-	mWindowAnimationsPref = (ListPreference) prefSet.findPreference(WINDOW_ANIMATIONS_PREF);
-	mWindowAnimationsPref.setOnPreferenceChangeListener(this);
-	mTransitionAnimationsPref = (ListPreference) prefSet.findPreference(TRANSITION_ANIMATIONS_PREF);
-	mTransitionAnimationsPref.setOnPreferenceChangeListener(this);
-	mFancyImeAnimationsPref = (CheckBoxPreference) prefSet.findPreference(FANCY_IME_ANIMATIONS_PREF);
-	mHapticFeedbackPref = (CheckBoxPreference) prefSet.findPreference(HAPTIC_FEEDBACK_PREF);
-	mFontSizePref = (ListPreference) prefSet.findPreference(FONT_SIZE_PREF);
-	mFontSizePref.setOnPreferenceChangeListener(this);
-	mEndButtonPref = (ListPreference) prefSet.findPreference(END_BUTTON_PREF);
-	mEndButtonPref.setOnPreferenceChangeListener(this);
-	mShowMapsCompassPref = (CheckBoxPreference) prefSet.findPreference(MAPS_COMPASS_PREF);
-	mCompatibilityMode = (CheckBoxPreference) findPreference(KEY_COMPATIBILITY_MODE);
-	mCompatibilityMode.setPersistent(false);
-	mCompatibilityMode.setChecked(Settings.System.getInt(getContentResolver(), Settings.System.COMPATIBILITY_MODE, 1) != 0);
-
 	mWindowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
 
 	// Current stock
@@ -559,7 +530,8 @@ public class SpareParts extends PreferenceActivity
 
 	// Defaults
 	mFixPermsPref.setChecked(false);
-	mBootanimPref.setValueIndex(1);
+	//bootanim on 1
+	//wake on 3
 
 	// ext relativ
 	if (!extfsIsMounted){
@@ -570,13 +542,6 @@ public class SpareParts extends PreferenceActivity
 	    mMedia2sdPref.setEnabled(false);
 	    setStringSummary(MEDIA2SD_PREF, "You need an ext3 parition on sdcard");
 	}
-
-	final PreferenceGroup parentPreference = getPreferenceScreen();
-	updatePreferenceToSpecificActivityOrRemove(this, parentPreference, BATTERY_HISTORY_PREF, 0);
-	updatePreferenceToSpecificActivityOrRemove(this, parentPreference, BATTERY_INFORMATION_PREF, 0);
-	updatePreferenceToSpecificActivityOrRemove(this, parentPreference, USAGE_STATISTICS_PREF, 0);
-
-	parentPreference.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     private String formatSize(long size) {
@@ -608,18 +573,6 @@ public class SpareParts extends PreferenceActivity
 		mSDCardEXTSize.setSummary(ObtainFSPartSize (SDCARDEXT_STORAGE_PATH));
 	} catch (IllegalArgumentException e) {
 	    Log.w(TAG, "Failed to obtain FS partition sizes");
-	    e.printStackTrace();
-	}
-    }
-
-    private void updateToggles() {
-	try {
-	    mFancyImeAnimationsPref.setChecked(Settings.System.getInt(getContentResolver(), Settings.System.FANCY_IME_ANIMATIONS, 0) != 0);
-	    mHapticFeedbackPref.setChecked(Settings.System.getInt(getContentResolver(), Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) != 0);
-	    Context c = createPackageContext("com.google.android.apps.maps", 0);
-	    mShowMapsCompassPref.setChecked(c.getSharedPreferences("extra-features", MODE_WORLD_READABLE).getBoolean("compass", false));
-	} catch (NameNotFoundException e) {
-	    Log.w(TAG, "Failed reading maps compass");
 	    e.printStackTrace();
 	}
     }
@@ -668,16 +621,7 @@ public class SpareParts extends PreferenceActivity
     }
 
     public boolean onPreferenceChange(Preference preference, Object objValue) {
-	if (preference == mWindowAnimationsPref) {
-	    writeAnimationPreference(0, objValue);
-	} else if (preference == mTransitionAnimationsPref) {
-	    writeAnimationPreference(1, objValue);
-	} else if (preference == mFontSizePref) {
-	    writeFontSizePreference(objValue);
-	} else if (preference == mEndButtonPref) {
-	    writeEndButtonPreference(objValue);
-	}
-	else if (preference == mApp2sdPref) {
+	if (preference == mApp2sdPref) {
 	    String[] commands = {
 		"pm setInstallLocation " + objValue
 	    };
@@ -927,99 +871,6 @@ public class SpareParts extends PreferenceActivity
 	return true;
     }
 
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-	if (preference == mCompatibilityMode) {
-	    Settings.System.putInt(getContentResolver(), Settings.System.COMPATIBILITY_MODE, mCompatibilityMode.isChecked() ? 1 : 0);
-	    return true;
-	}
-	return false;
-    }
-
-    public void writeAnimationPreference(int which, Object objValue) {
-	try {
-	    float val = Float.parseFloat(objValue.toString());
-	    mWindowManager.setAnimationScale(which, val);
-	} catch (NumberFormatException e) {
-	} catch (RemoteException e) {
-	}
-    }
-
-    public void writeFontSizePreference(Object objValue) {
-	try {
-	    mCurConfig.fontScale = Float.parseFloat(objValue.toString());
-	    ActivityManagerNative.getDefault().updateConfiguration(mCurConfig);
-	} catch (RemoteException e) {
-	}
-    }
-
-    public void writeEndButtonPreference(Object objValue) {
-	try {
-	    int val = Integer.parseInt(objValue.toString());
-	    Settings.System.putInt(getContentResolver(), Settings.System.END_BUTTON_BEHAVIOR, val);
-	} catch (NumberFormatException e) {
-	}
-    }
-
-    int floatToIndex(float val, int resid) {
-	String[] indices = getResources().getStringArray(resid);
-	float lastVal = Float.parseFloat(indices[0]);
-	for (int i=1; i<indices.length; i++) {
-	    float thisVal = Float.parseFloat(indices[i]);
-	    if (val < (lastVal + (thisVal-lastVal)*.5f)) {
-		return i-1;
-	    }
-	    lastVal = thisVal;
-	}
-	return indices.length-1;
-    }
-
-    public void readAnimationPreference(int which, ListPreference pref) {
-	try {
-	    float scale = mWindowManager.getAnimationScale(which);
-	    pref.setValueIndex(floatToIndex(scale,
-		    R.array.entryvalues_animations));
-	} catch (RemoteException e) {
-	}
-    }
-
-    public void readFontSizePreference(ListPreference pref) {
-	try {
-	    mCurConfig.updateFrom(
-		ActivityManagerNative.getDefault().getConfiguration());
-	} catch (RemoteException e) {
-	}
-	pref.setValueIndex(floatToIndex(mCurConfig.fontScale,
-		R.array.entryvalues_font_size));
-    }
-
-    public void readEndButtonPreference(ListPreference pref) {
-	try {
-	    pref.setValueIndex(Settings.System.getInt(getContentResolver(),
-		    Settings.System.END_BUTTON_BEHAVIOR));
-	} catch (SettingNotFoundException e) {
-	}
-    }
-
-    public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-	if (FANCY_IME_ANIMATIONS_PREF.equals(key))
-	    Settings.System.putInt(getContentResolver(), Settings.System.FANCY_IME_ANIMATIONS, mFancyImeAnimationsPref.isChecked() ? 1 : 0);
-	else if (HAPTIC_FEEDBACK_PREF.equals(key))
-	    Settings.System.putInt(getContentResolver(), Settings.System.HAPTIC_FEEDBACK_ENABLED, mHapticFeedbackPref.isChecked() ? 1 : 0);
-	else if (MAPS_COMPASS_PREF.equals(key)) {
-	    try {
-		Context c = createPackageContext("com.google.android.apps.maps", 0);
-		c.getSharedPreferences("extra-features", MODE_WORLD_WRITEABLE)
-		    .edit()
-		    .putBoolean("compass", mShowMapsCompassPref.isChecked())
-		    .commit();
-	    } catch (NameNotFoundException e) {
-		Log.w(TAG, "Failed setting maps compass");
-		e.printStackTrace();
-	    }
-	}
-    }
-
     public boolean fileExists(String filename) {
     	File f = new File(filename);
     	return f.exists();
@@ -1173,10 +1024,5 @@ public class SpareParts extends PreferenceActivity
     @Override
     public void onResume() {
 	super.onResume();
-	readAnimationPreference(0, mWindowAnimationsPref);
-	readAnimationPreference(1, mTransitionAnimationsPref);
-	readFontSizePreference(mFontSizePref);
-	readEndButtonPreference(mEndButtonPref);
-	updateToggles();
     }
 }
