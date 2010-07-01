@@ -82,7 +82,7 @@ public class SpareParts extends PreferenceActivity
     	};
     final Runnable mUpdateFinished = new Runnable() {
     	    public void run() {
-		patience.dismiss();
+		patience.cancel();
     	    }
     	};
 
@@ -113,18 +113,21 @@ public class SpareParts extends PreferenceActivity
     private static final String TWITTER_PREF = "twitter";
     private static final String YOUTUBE_PREF = "youtube";
 
-    private static final String BOOTANIM_PREF = "bootanim";
-    private static final String FONTS_PREF = "fonts";
-    private static final String WAKE_PREF = "wake";
-    private static final String HTC_IME_PREF = "htc_ime";
-    private static final String CPU_LED_PREF = "cpu_led";
     private static final String ADWLAUNCHER_PREF = "adwlauncher";
-    private static final String GALAXY_LWP_PREF = "galaxy_lwp";
     private static final String FILEMANAGER_PREF = "filemanager";
     private static final String SAVENUM_PREF = "savenum";
     private static final String TERMINAL_PREF = "terminal";
-    private static final String TESLA_FLASHLITE_PREF = "tesla_flashlite";
+    private static final String TESLA_FLASHLITE_PREF = "tesla_flashlight";
     private static final String TRACKBALL_ALERT_PREF = "trackball_alert";
+    private static final String METAMORPH_PREF = "metamorph";
+
+    private static final String BOOTANIM_PREF = "bootanim";
+    private static final String WAKE_PREF = "wake";
+    private static final String FONTS_PREF = "fonts";
+    private static final String HTC_IME_PREF = "htc_ime";
+    private static final String CPU_LED_PREF = "cpu_led";
+    private static final String GALAXY_LWP_PREF = "galaxy_lwp";
+    private static final String PLAYER_PREF = "player";
 
     private static final String SYSTEM_PART_SIZE = "system_storage_levels";
     private static final String SYSTEM_STORAGE_PATH = "/system";
@@ -139,6 +142,8 @@ public class SpareParts extends PreferenceActivity
     private static final String REFRESH_PREF = "refresh";
     private static final String OLD_APP2SD_PREF = "app2sd_opt";
     private static final String DALVIK2SD_PREF = "dalvik2sd_opt";
+    private static final String DATA2SD_PREF = "data2sd_opt";
+    private static final String MEDIA2SD_PREF = "media2sd_opt";
 
     private static final String ABOUT_AUTHOR = "about_author";
     private static final String ABOUT_DONATE = "about_donate";
@@ -178,18 +183,21 @@ public class SpareParts extends PreferenceActivity
     private CheckBoxPreference mTwitterPref;
     private CheckBoxPreference mYouTubePref;
 
-    private ListPreference mBootanimPref;
-    private CheckBoxPreference mFontsPref;
-    private CheckBoxPreference mWakePref;
-    private CheckBoxPreference mHtcImePref;
-    private CheckBoxPreference mCpuLedPref;
     private CheckBoxPreference mADWLauncherPref;
-    private CheckBoxPreference mGalaxyLWPPref;
     private CheckBoxPreference mFileManagerPref;
     private CheckBoxPreference mSaveNumPref;
     private CheckBoxPreference mTerminalPref;
-    private CheckBoxPreference mTeslaFlashlitePref;
+    private CheckBoxPreference mTeslaFlashlightPref;
     private CheckBoxPreference mTrackballAlertPref;
+    private CheckBoxPreference mMetamorphPref;
+
+    private ListPreference mBootanimPref;
+    private CheckBoxPreference mWakePref;
+    private CheckBoxPreference mFontsPref;
+    private CheckBoxPreference mHtcImePref;
+    private CheckBoxPreference mCpuLedPref;
+    private CheckBoxPreference mGalaxyLWPPref;
+    private CheckBoxPreference mPlayerPref;
 
     private Preference mSystemSize;
     private Preference mDataSize;
@@ -199,6 +207,8 @@ public class SpareParts extends PreferenceActivity
     private Preference mRefresh;
     private CheckBoxPreference mOldApp2sdPref;
     private CheckBoxPreference mDalvik2sdPref;
+    private CheckBoxPreference mData2sdPref;
+    private CheckBoxPreference mMedia2sdPref;
 
     private Preference mAboutAuthor;
     private Preference mAboutDonate;
@@ -375,35 +385,44 @@ public class SpareParts extends PreferenceActivity
 	mYouTubePref = (CheckBoxPreference) prefSet.findPreference(YOUTUBE_PREF);
 	mYouTubePref.setOnPreferenceChangeListener(this);
 
-	mBootanimPref = (ListPreference) prefSet.findPreference(BOOTANIM_PREF);
-	mBootanimPref.setOnPreferenceChangeListener(this);
-	mFontsPref = (CheckBoxPreference) prefSet.findPreference(FONTS_PREF);
-	mFontsPref.setOnPreferenceChangeListener(this);
-	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
-	mWakePref.setOnPreferenceChangeListener(this);
-	mHtcImePref = (CheckBoxPreference) prefSet.findPreference(HTC_IME_PREF);
-	mHtcImePref.setOnPreferenceChangeListener(this);
-	mCpuLedPref = (CheckBoxPreference) prefSet.findPreference(CPU_LED_PREF);
-	mCpuLedPref.setOnPreferenceChangeListener(this);
 	mADWLauncherPref = (CheckBoxPreference) prefSet.findPreference(ADWLAUNCHER_PREF);
 	mADWLauncherPref.setOnPreferenceChangeListener(this);
-	mGalaxyLWPPref = (CheckBoxPreference) prefSet.findPreference(GALAXY_LWP_PREF);
-	mGalaxyLWPPref.setOnPreferenceChangeListener(this);
 	mFileManagerPref = (CheckBoxPreference) prefSet.findPreference(FILEMANAGER_PREF);
 	mFileManagerPref.setOnPreferenceChangeListener(this);
 	mSaveNumPref = (CheckBoxPreference) prefSet.findPreference(SAVENUM_PREF);
 	mSaveNumPref.setOnPreferenceChangeListener(this);
 	mTerminalPref = (CheckBoxPreference) prefSet.findPreference(TERMINAL_PREF);
 	mTerminalPref.setOnPreferenceChangeListener(this);
-	mTeslaFlashlitePref = (CheckBoxPreference) prefSet.findPreference(TESLA_FLASHLITE_PREF);
-	mTeslaFlashlitePref.setOnPreferenceChangeListener(this);
+	mTeslaFlashlightPref = (CheckBoxPreference) prefSet.findPreference(TESLA_FLASHLITE_PREF);
+	mTeslaFlashlightPref.setOnPreferenceChangeListener(this);
 	mTrackballAlertPref = (CheckBoxPreference) prefSet.findPreference(TRACKBALL_ALERT_PREF);
 	mTrackballAlertPref.setOnPreferenceChangeListener(this);
+	mMetamorphPref = (CheckBoxPreference) prefSet.findPreference(METAMORPH_PREF);
+	mMetamorphPref.setOnPreferenceChangeListener(this);
+
+	mBootanimPref = (ListPreference) prefSet.findPreference(BOOTANIM_PREF);
+	mBootanimPref.setOnPreferenceChangeListener(this);
+	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
+	mWakePref.setOnPreferenceChangeListener(this);
+	mFontsPref = (CheckBoxPreference) prefSet.findPreference(FONTS_PREF);
+	mFontsPref.setOnPreferenceChangeListener(this);
+	mHtcImePref = (CheckBoxPreference) prefSet.findPreference(HTC_IME_PREF);
+	mHtcImePref.setOnPreferenceChangeListener(this);
+	mCpuLedPref = (CheckBoxPreference) prefSet.findPreference(CPU_LED_PREF);
+	mCpuLedPref.setOnPreferenceChangeListener(this);
+	mGalaxyLWPPref = (CheckBoxPreference) prefSet.findPreference(GALAXY_LWP_PREF);
+	mGalaxyLWPPref.setOnPreferenceChangeListener(this);
+	mPlayerPref = (CheckBoxPreference) prefSet.findPreference(PLAYER_PREF);
+	mPlayerPref.setOnPreferenceChangeListener(this);
 
 	mOldApp2sdPref = (CheckBoxPreference) prefSet.findPreference(OLD_APP2SD_PREF);
 	mOldApp2sdPref.setOnPreferenceChangeListener(this);
 	mDalvik2sdPref = (CheckBoxPreference) prefSet.findPreference(DALVIK2SD_PREF);
 	mDalvik2sdPref.setOnPreferenceChangeListener(this);
+	mData2sdPref = (CheckBoxPreference) prefSet.findPreference(DATA2SD_PREF);
+	mData2sdPref.setOnPreferenceChangeListener(this);
+	mMedia2sdPref = (CheckBoxPreference) prefSet.findPreference(MEDIA2SD_PREF);
+	mMedia2sdPref.setOnPreferenceChangeListener(this);
 
 	extfsIsMounted     = fileExists("/dev/block/mmcblk0p2");
 	mSystemSize        = (Preference) prefSet.findPreference(SYSTEM_PART_SIZE);
@@ -475,6 +494,10 @@ public class SpareParts extends PreferenceActivity
 
 	// Current stock
 	mUiSoundsPref.setChecked(fileExists("/system/media/audio/ui/.bak"));
+	mOldApp2sdPref.setChecked(fileExists("/system/sd/app"));
+	mDalvik2sdPref.setChecked(fileExists("/system/sd/dalvik-cache"));
+	mData2sdPref.setChecked(fileExists("/system/sd/data"));
+	mMedia2sdPref.setChecked(fileExists("/system/sd/media"));
 
 	mCarHomePref.setChecked(fileExists("/system/app/CarHomeGoogle.apk"));
 	mCarHomePref.setEnabled(fileExists("/system/app/CarHomeGoogle.apk"));
@@ -486,6 +509,7 @@ public class SpareParts extends PreferenceActivity
 	mTwitterPref.setEnabled(fileExists("/system/app/Twitter.apk"));
 	mYouTubePref.setChecked(fileExists("/system/app/YouTube.apk"));
 	mYouTubePref.setEnabled(fileExists("/system/app/YouTube.apk"));
+
 	mADWLauncherPref.setChecked(fileExists("/system/app/ADWLauncher.apk"));
 	mADWLauncherPref.setEnabled(fileExists("/system/app/ADWLauncher.apk"));
 	mFileManagerPref.setChecked(fileExists("/system/app/FileManager.apk"));
@@ -494,10 +518,12 @@ public class SpareParts extends PreferenceActivity
 	mSaveNumPref.setEnabled(fileExists("/system/app/SaveNum.apk"));
 	mTerminalPref.setChecked(fileExists("/system/app/Terminal.apk"));
 	mTerminalPref.setEnabled(fileExists("/system/app/Terminal.apk"));
-	mTeslaFlashlitePref.setChecked(fileExists("/system/app/TeslaFlashlite.apk"));
-	mTeslaFlashlitePref.setEnabled(fileExists("/system/app/TeslaFlashlite.apk"));
+	mTeslaFlashlightPref.setChecked(fileExists("/system/app/TeslaFlashlight.apk"));
+	mTeslaFlashlightPref.setEnabled(fileExists("/system/app/TeslaFlashlight.apk"));
 	mTrackballAlertPref.setChecked(fileExists("/system/app/TrackballAlert.apk"));
 	mTrackballAlertPref.setEnabled(fileExists("/system/app/TrackballAlert.apk"));
+	mMetamorphPref.setChecked(fileExists("/system/app/Metamorph.apk"));
+	mMetamorphPref.setEnabled(fileExists("/system/app/Metamorph.apk"));
 
 	// Current custom
 	if (!fileExists("/system/xbin/nouisounds")) {
@@ -508,21 +534,35 @@ public class SpareParts extends PreferenceActivity
 	    mFixPermsPref.setEnabled(false);
 	    setStringSummary(FIX_PERMS_PREF, "Script not found");
 	}
+	if (!fileExists("/system/xbin/a2sd")) {
+	    mOldApp2sdPref.setEnabled(false);
+	    setStringSummary(OLD_APP2SD_PREF, "Script not found");
+	}
+	if (!fileExists("/system/xbin/dalvik2sd")) {
+	    mDalvik2sdPref.setEnabled(false);
+	    setStringSummary(DALVIK2SD_PREF, "Script not found");
+	}
+	if (!fileExists("/system/xbin/data2sd")) {
+	    mData2sdPref.setEnabled(false);
+	    setStringSummary(DATA2SD_PREF, "Script not found");
+	}
+	if (!fileExists("/system/xbin/media2sd")) {
+	    mMedia2sdPref.setEnabled(false);
+	    setStringSummary(MEDIA2SD_PREF, "Script not found");
+	}
 
 	// Defaults
 	mFixPermsPref.setChecked(false);
-	mBootanimPref.setDefaultValue(1);
+	mBootanimPref.setValueIndex(1);
 
 	// ext relativ
-	if(!extfsIsMounted){
+	if (!extfsIsMounted){
 	    mOldApp2sdPref.setEnabled(false);
 	    setStringSummary(OLD_APP2SD_PREF, "You need an ext3 parition on sdcard");
 	    mDalvik2sdPref.setEnabled(false);
 	    setStringSummary(DALVIK2SD_PREF, "You need an ext3 parition on sdcard");
-	}
-	else {
-	    mApp2sdPref.setEnabled(false);
-	    setStringSummary(APP2SD_PREF, "You have an ext partition mounted");
+	    mMedia2sdPref.setEnabled(false);
+	    setStringSummary(MEDIA2SD_PREF, "You need an ext3 parition on sdcard");
 	}
 
 	final PreferenceGroup parentPreference = getPreferenceScreen();
@@ -581,6 +621,7 @@ public class SpareParts extends PreferenceActivity
     public boolean removeSystemApp(CheckBoxPreference preference, final String name) {
 	if (!fileExists("/system/app/" + name + ".apk")) {
 	    popup("Error", name + " does not exists in /system/app!");
+	    preference.setChecked(false);
 	    return false;
 	}
 	String[] commands = {
@@ -679,6 +720,7 @@ public class SpareParts extends PreferenceActivity
 		};
 		sendshell(commands, false, "Removing CarHome...");
 	    }
+	    mCarHomePref.setEnabled(false);
 	}
 	else if (preference == mEmailPref)
 	    return removeSystemApp(mEmailPref, "EmailGoogle");
@@ -688,6 +730,20 @@ public class SpareParts extends PreferenceActivity
 	    return removeSystemApp(mTwitterPref, "Twitter");
 	else if (preference == mYouTubePref)
 	    return removeSystemApp(mYouTubePref, "YouTube");
+	else if (preference == mADWLauncherPref)
+	    return installOrRemoveAddon(mCpuLedPref, REPO + "ADWLauncher.apk", false, "ADWLauncher", "org.adw.launcher");
+	else if (preference == mFileManagerPref)
+	    return removeSystemApp(mFileManagerPref, "FileManager");
+	else if (preference == mSaveNumPref)
+	    return removeSystemApp(mSaveNumPref, "SaveNum");
+	else if (preference == mTerminalPref)
+	    return removeSystemApp(mTerminalPref, "Terminal");
+	else if (preference == mTeslaFlashlightPref)
+	    return removeSystemApp(mTeslaFlashlightPref, "TeslaFlashlight");
+	else if (preference == mTrackballAlertPref)
+	    return removeSystemApp(mTrackballAlertPref, "TrackballAlert");
+	else if (preference == mMetamorphPref)
+	    return removeSystemApp(mMetamorphPref, "Metamorph");
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
 		REMOUNT_RW,
@@ -697,8 +753,6 @@ public class SpareParts extends PreferenceActivity
 	    };
 	    sendshell(commands, true, "Downloading and installing " + objValue.toString() + "...");
 	}
-	else if (preference == mFontsPref)
-	    return installOrRemoveAddon(mFontsPref, REPO + "Fonts.apk", false, "Fonts", "com.betterandroid.fonts");
 	else if (preference == mWakePref) {
 	    boolean have = mWakePref.isChecked();
 	    installOrRemoveAddon(mWakePref, REPO + "wake.apk", true, "myLock", "i4nc4mp.myLock.froyo");
@@ -713,6 +767,8 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, false, "Downloading and configuring myLock...");
 	    }
 	}
+	else if (preference == mFontsPref)
+	    return installOrRemoveAddon(mFontsPref, REPO + "Fonts.apk", false, "Fonts", "com.betterandroid.fonts");
 	else if (preference == mHtcImePref) {
 	    boolean have = mHtcImePref.isChecked();
 	    if (!have) {
@@ -734,8 +790,6 @@ public class SpareParts extends PreferenceActivity
 	}
 	else if (preference == mCpuLedPref)
 	    return installOrRemoveAddon(mCpuLedPref, REPO + "cpu_led.apk", false, "CPU Led", "com.google.android.netmeterled");
-	else if (preference == mADWLauncherPref)
-	    return installOrRemoveAddon(mCpuLedPref, REPO + "ADWLauncher.apk", false, "ADWLauncher", "org.adw.launcher");
 	else if (preference == mGalaxyLWPPref) {
 	    boolean have = mGalaxyLWPPref.isChecked();
 	    if (!have) {
@@ -761,28 +815,33 @@ public class SpareParts extends PreferenceActivity
 		sendshell(commands, false, "Removing Galaxy-S LWPs...");
 	    }
 	}
-	else if (preference == mFileManagerPref)
-	    return removeSystemApp(mFileManagerPref, "FileManager");
-	else if (preference == mSaveNumPref)
-	    return removeSystemApp(mSaveNumPref, "SaveNum");
-	else if (preference == mTerminalPref)
-	    return removeSystemApp(mTerminalPref, "Terminal");
-	else if (preference == mTeslaFlashlitePref)
-	    return removeSystemApp(mTeslaFlashlitePref, "TeslaFlashlite");
-	else if (preference == mTrackballAlertPref)
-	    return removeSystemApp(mTrackballAlertPref, "TrackballAlert");
+	else if (preference == mPlayerPref)
+	    return installOrRemoveAddon(mPlayerPref, REPO + "player.apk", false, "RockPlayer", "org.freecoder.android.cmplayer");
 	else if (preference == mOldApp2sdPref) {
 	    boolean have = mOldApp2sdPref.isChecked();
 	    if (!have) {
-		String[] commands = {
-		    "a2sd on"
-		};
-		sendshell(commands, true, "Mounting ext and moving apps...");
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Info")
+		    .setMessage("The stock app2sd method will be reset to \"internal\" by default.")
+		    .setCancelable(false)
+		    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+				String[] commands = {
+				    "pm setInstallLocation 1",
+				    "a2sd on"
+				};
+				sendshell(commands, false, "Moving apps...");
+				finish();
+			    }
+			});
+		AlertDialog alert = builder.create();
+		alert.show();
 	    } else {
 		String[] commands = {
 		    "a2sd off",
 		};
-		sendshell(commands, true, "Unmounting ext and restoring apps...");
+		sendshell(commands, false, "Restoring apps...");
 	    }
 	}
 	else if (preference == mDalvik2sdPref) {
@@ -791,12 +850,40 @@ public class SpareParts extends PreferenceActivity
 		String[] commands = {
 		    "dalvik2sd on"
 		};
-		sendshell(commands, true, "Mounting ext and moving dalvik-cache...");
+		sendshell(commands, false, "Moving dalvik-cache...");
 	    } else {
 		String[] commands = {
 		    "dalvik2sd off",
 		};
-		sendshell(commands, true, "Unmounting ext and restoring dalvik-cache...");
+		sendshell(commands, false, "Restoring dalvik-cache...");
+	    }
+	}
+	else if (preference == mData2sdPref) {
+	    boolean have = mData2sdPref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "data2sd on"
+		};
+		sendshell(commands, false, "Moving data...");
+	    } else {
+		String[] commands = {
+		    "data2sd off",
+		};
+		sendshell(commands, false, "Restoring data...");
+	    }
+	}
+	else if (preference == mMedia2sdPref) {
+	    boolean have = mMedia2sdPref.isChecked();
+	    if (!have) {
+		String[] commands = {
+		    "media2sd on"
+		};
+		sendshell(commands, false, "Moving system/media...");
+	    } else {
+		String[] commands = {
+		    "media2sd off",
+		};
+		sendshell(commands, false, "Restoring system/media...");
 	    }
 	}
 	// always let the preference setting proceed.

@@ -236,16 +236,22 @@
 	   android:summaryOff=" Terminal not installed" />
 
 	<CheckBoxPreference
-	   android:key="tesla_flashlite"
-	   android:title="Tesla flashlite"
-	   android:summaryOn=" Tesla flashlite installed"
-	   android:summaryOff=" Tesla flashlite not installed" />
+	   android:key="tesla_flashlight"
+	   android:title="Tesla flashlight"
+	   android:summaryOn=" Tesla flashlight installed"
+	   android:summaryOff=" Tesla flashlight not installed" />
 
 	<CheckBoxPreference
 	   android:key="trackball_alert"
 	   android:title="Trackball Alert"
 	   android:summaryOn=" Trackball Alert installed"
 	   android:summaryOff=" Trackball Alert not installed" />
+
+	<CheckBoxPreference
+	   android:key="metamorph"
+	   android:title="Metamorph"
+	   android:summaryOn=" Metamorph installed"
+	   android:summaryOff=" Metamorph not installed" />
 
       </PreferenceScreen>
 
@@ -290,6 +296,12 @@
 	   android:title="Samsung Galaxy LWPs"
 	   android:summaryOn=" Galaxy LWPs installed"
 	   android:summaryOff=" Galaxy LWPs not installed" />
+
+	<CheckBoxPreference
+	   android:key="player"
+	   android:title="DivX/XviD player"
+	   android:summaryOn=" RockPlayer installed"
+	   android:summaryOff=" RockPlayer not installed" />
 
       </PreferenceScreen>
 
@@ -367,14 +379,9 @@
 	   android:summary=" Unavailable">
 	</PreferenceScreen>
 
-      </PreferenceCategory>
-
-      <PreferenceCategory
-	 android:title="Refresh">
-
 	<PreferenceScreen
 	   android:key="refresh"
-	   android:title=" Refresh storage data"
+	   android:title="Refresh storage data"
 	   android:summary="">
 	</PreferenceScreen>
 
@@ -394,6 +401,18 @@
 	   android:title="Dalvik-Cache on SDCard"
 	   android:summaryOn=" Dalvik-Cache on sdcard"
 	   android:summaryOff=" Dalvik-Cache on /data"/>
+
+	<CheckBoxPreference
+	   android:key="data2sd_opt"
+	   android:title="Data on SDCard"
+	   android:summaryOn=" Data on sdcard"
+	   android:summaryOff=" Data on /system"/>
+
+	<CheckBoxPreference
+	   android:key="media2sd_opt"
+	   android:title="Media on SDCard"
+	   android:summaryOn=" System/media on sdcard"
+	   android:summaryOff=" System/media on /system"/>
 
       </PreferenceCategory>
 
