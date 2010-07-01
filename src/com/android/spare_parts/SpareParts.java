@@ -528,8 +528,8 @@ public class SpareParts extends PreferenceActivity
 	mTrackballAlertPref.setEnabled(fileExists("/system/app/TrackballAlert.apk"));
 	mMetamorphPref.setChecked(fileExists("/system/app/Metamorph.apk"));
 	mMetamorphPref.setEnabled(fileExists("/system/app/Metamorph.apk"));
-	mBarcodePref.setChecked(fileExists("/system/app/Barcode.apk"));
-	mBarcodePref.setEnabled(fileExists("/system/app/Barcode.apk"));
+	mBarcodePref.setChecked(fileExists("/system/app/BarcodeScanner.apk"));
+	mBarcodePref.setEnabled(fileExists("/system/app/BarcodeScanner.apk"));
 
 	// Current custom
 	if (!fileExists("/system/xbin/nouisounds")) {
