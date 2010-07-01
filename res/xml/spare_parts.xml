@@ -100,6 +100,14 @@
       <PreferenceCategory
 	 android:title="Advanced">
 
+	<ListPreference
+	   android:key="trackball_wake"
+	   android:title="Trackball wake"
+	   android:summary=" Define how to wake up the phone"
+	   android:entries="@array/entries_wake"
+	   android:entryValues="@array/entryvalues_wake"
+	   android:dialogTitle="Select an option" />
+
 	<CheckBoxPreference
 	   android:key="ui_sounds"
 	   android:title="UI sounds"
@@ -253,6 +261,12 @@
 	   android:summaryOn=" Metamorph installed"
 	   android:summaryOff=" Metamorph not installed" />
 
+	<CheckBoxPreference
+	   android:key="barcode"
+	   android:title="Barcode scanner"
+	   android:summaryOn=" Barcode scanner installed"
+	   android:summaryOff=" Barcode scanner not installed" />
+
       </PreferenceScreen>
 
       <PreferenceScreen
@@ -266,12 +280,6 @@
 	   android:entries="@array/entries_bootanim"
 	   android:entryValues="@array/entryvalues_bootanim"
 	   android:dialogTitle="Select an option" />
-
-	<CheckBoxPreference
-	   android:key="wake"
-	   android:title="Trackball Wake"
-	   android:summaryOn=" myLock installed"
-	   android:summaryOff=" myLock not installed" />
 
 	<CheckBoxPreference
 	   android:key="fonts"

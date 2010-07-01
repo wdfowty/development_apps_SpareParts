@@ -120,9 +120,10 @@ public class SpareParts extends PreferenceActivity
     private static final String TESLA_FLASHLITE_PREF = "tesla_flashlight";
     private static final String TRACKBALL_ALERT_PREF = "trackball_alert";
     private static final String METAMORPH_PREF = "metamorph";
+    private static final String BARCODE_PREF = "barcode";
 
     private static final String BOOTANIM_PREF = "bootanim";
-    private static final String WAKE_PREF = "wake";
+    private static final String WAKE_PREF = "trackball_wake";
     private static final String FONTS_PREF = "fonts";
     private static final String HTC_IME_PREF = "htc_ime";
     private static final String CPU_LED_PREF = "cpu_led";
@@ -190,9 +191,10 @@ public class SpareParts extends PreferenceActivity
     private CheckBoxPreference mTeslaFlashlightPref;
     private CheckBoxPreference mTrackballAlertPref;
     private CheckBoxPreference mMetamorphPref;
+    private CheckBoxPreference mBarcodePref;
 
     private ListPreference mBootanimPref;
-    private CheckBoxPreference mWakePref;
+    private ListPreference mWakePref;
     private CheckBoxPreference mFontsPref;
     private CheckBoxPreference mHtcImePref;
     private CheckBoxPreference mCpuLedPref;
@@ -399,10 +401,12 @@ public class SpareParts extends PreferenceActivity
 	mTrackballAlertPref.setOnPreferenceChangeListener(this);
 	mMetamorphPref = (CheckBoxPreference) prefSet.findPreference(METAMORPH_PREF);
 	mMetamorphPref.setOnPreferenceChangeListener(this);
+	mBarcodePref = (CheckBoxPreference) prefSet.findPreference(BARCODE_PREF);
+	mBarcodePref.setOnPreferenceChangeListener(this);
 
 	mBootanimPref = (ListPreference) prefSet.findPreference(BOOTANIM_PREF);
 	mBootanimPref.setOnPreferenceChangeListener(this);
-	mWakePref = (CheckBoxPreference) prefSet.findPreference(WAKE_PREF);
+	mWakePref = (ListPreference) prefSet.findPreference(WAKE_PREF);
 	mWakePref.setOnPreferenceChangeListener(this);
 	mFontsPref = (CheckBoxPreference) prefSet.findPreference(FONTS_PREF);
 	mFontsPref.setOnPreferenceChangeListener(this);
@@ -524,6 +528,8 @@ public class SpareParts extends PreferenceActivity
 	mTrackballAlertPref.setEnabled(fileExists("/system/app/TrackballAlert.apk"));
 	mMetamorphPref.setChecked(fileExists("/system/app/Metamorph.apk"));
 	mMetamorphPref.setEnabled(fileExists("/system/app/Metamorph.apk"));
+	mBarcodePref.setChecked(fileExists("/system/app/Barcode.apk"));
+	mBarcodePref.setEnabled(fileExists("/system/app/Barcode.apk"));
 
 	// Current custom
 	if (!fileExists("/system/xbin/nouisounds")) {
@@ -744,6 +750,8 @@ public class SpareParts extends PreferenceActivity
 	    return removeSystemApp(mTrackballAlertPref, "TrackballAlert");
 	else if (preference == mMetamorphPref)
 	    return removeSystemApp(mMetamorphPref, "Metamorph");
+	else if (preference == mBarcodePref)
+	    return removeSystemApp(mBarcodePref, "BarcodeScanner");
 	else if (preference == mBootanimPref) {
 	    String[] commands = {
 		REMOUNT_RW,
@@ -754,17 +762,46 @@ public class SpareParts extends PreferenceActivity
 	    sendshell(commands, true, "Downloading and installing " + objValue.toString() + "...");
 	}
 	else if (preference == mWakePref) {
-	    boolean have = mWakePref.isChecked();
-	    installOrRemoveAddon(mWakePref, REPO + "wake.apk", true, "myLock", "i4nc4mp.myLock.froyo");
-	    if (!have) {
+	    if (objValue.toString().equals("0")) {
 		String[] commands = {
+		    "pm uninstall i4nc4mp.myLock.froyo",
 		    REMOUNT_RW,
-		    "busybox wget -q " + REPO + "myLock.xml -O /data/local/tmp/myLock.xml" +
-		    " && busybox mkdir -p /data/data/i4nc4mp.myLock.froyo/shared_prefs" +
-		    " && busybox mv /data/local/tmp/myLock.xml /data/data/i4nc4mp.myLock.froyo/shared_prefs/myLock.xml",
+		    "busybox wget -q " + REPO + "stock-android.policy.jar -O /data/local/tmp/android.policy.jar" +
+		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar",
 		    REMOUNT_RO
 		};
-		sendshell(commands, false, "Downloading and configuring myLock...");
+		sendshell(commands, true, "Removing myLock and restoring stock parameters...");
+	    }
+	    else if (objValue.toString().equals("1")) {
+		String[] commands = {
+		    "busybox wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk" +
+		    " && pm install -r /data/local/tmp/wake.apk ; busybox rm -f /data/local/tmp/wake.apk",
+		    REMOUNT_RW,
+		    "busybox wget -q " + REPO + "stock-android.policy.jar -O /data/local/tmp/android.policy.jar" +
+		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar",
+		    REMOUNT_RO
+		};
+		sendshell(commands, true, "Downloading, installing and configuring myLock...");
+	    }
+	    else if (objValue.toString().equals("2")) {
+		String[] commands = {
+		    "pm uninstall i4nc4mp.myLock.froyo",
+		    REMOUNT_RW,
+		    "busybox wget -q " + REPO + "wake-android.policy.jar -O /data/local/tmp/android.policy.jar" +
+		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar",
+		    REMOUNT_RO
+		};
+		sendshell(commands, true, "Downloading Trackball Wake...");
+	    }
+	    else if (objValue.toString().equals("3")) {
+		String[] commands = {
+		    "pm uninstall i4nc4mp.myLock.froyo",
+		    REMOUNT_RW,
+		    "busybox wget -q " + REPO + "unlock-android.policy.jar -O /data/local/tmp/android.policy.jar" +
+		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar",
+		    REMOUNT_RO
+		};
+		sendshell(commands, true, "Downloading Trackball Wake+unlock...");
 	    }
 	}
 	else if (preference == mFontsPref)

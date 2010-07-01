@@ -32,21 +32,28 @@
     <string-array name="entries_bootanim">
         <item>Stock</item>
         <item>LeoFroYo BIOS</item>
+        <item>Scribble droid</item>
+
     </string-array>
 
     <string-array name="entryvalues_bootanim">
         <item>stock-bootanimation.zip</item>
         <item>leofroyo-bootanimation.zip</item>
+	<item>scribble-bootanimation.zip</item>
     </string-array>
 
-    <string-array name="entries_notifbar">
-        <item>Black on White</item>
-        <item>White on Black</item>
+    <string-array name="entries_wake">
+        <item>Use none</item>
+        <item>Use myLock</item>
+        <item>Use Trackball Wake</item>
+        <item>Use Trackball Wake + Unlock</item>
     </string-array>
 
-    <string-array name="entryvalues_notifbar">
+    <string-array name="entryvalues_wake">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="entries_animations">
