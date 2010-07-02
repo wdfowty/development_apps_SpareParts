@@ -75,6 +75,12 @@
 	   android:summary=" Unavailable">
 	</PreferenceScreen>
 
+	<PreferenceScreen
+	   android:key="rom_patch"
+	   android:title="Check for fixes"
+	   android:summary=" Unavailable">
+	</PreferenceScreen>
+
       </PreferenceCategory>
 
     </PreferenceScreen>
@@ -267,6 +273,12 @@
 	   android:summaryOn=" Barcode scanner installed"
 	   android:summaryOff=" Barcode scanner not installed" />
 
+	<CheckBoxPreference
+	   android:key="notcalllog"
+	   android:title="No CallLog after call"
+	   android:summaryOn=" NotCallLog installed"
+	   android:summaryOff=" NotCallLog not installed" />
+
       </PreferenceScreen>
 
       <PreferenceScreen
@@ -310,6 +322,12 @@
 	   android:title="DivX/XviD player"
 	   android:summaryOn=" RockPlayer installed"
 	   android:summaryOff=" RockPlayer not installed" />
+
+	<CheckBoxPreference
+	   android:key="remvol"
+	   android:title="Hedset volume ctrl."
+	   android:summaryOn=" Remvol installed"
+	   android:summaryOff=" Remvol not installed" />
 
       </PreferenceScreen>
 
