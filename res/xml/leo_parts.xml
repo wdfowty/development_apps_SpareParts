@@ -29,26 +29,14 @@
 	 android:title="Infos">
 
 	<PreferenceScreen
-	   android:key="rom_name"
-	   android:title="Name"
+	   android:key="rom_name_version"
+	   android:title="Name / Version / Patch"
 	   android:summary=" Unavailable">
 	</PreferenceScreen>
 
 	<PreferenceScreen
-	   android:key="rom_version"
-	   android:title="Version"
-	   android:summary=" Unavailable">
-	</PreferenceScreen>
-
-	<PreferenceScreen
-	   android:key="rom_build"
-	   android:title="Build / Fingerprint"
-	   android:summary=" Unavailable">
-	</PreferenceScreen>
-
-	<PreferenceScreen
-	   android:key="rom_sys_version"
-	   android:title="System version"
+	   android:key="rom_system_build"
+	   android:title="System / Build / Fingerprint"
 	   android:summary=" Unavailable">
 	</PreferenceScreen>
 
@@ -71,14 +59,8 @@
 
 	<PreferenceScreen
 	   android:key="rom_update"
-	   android:title="Check for update"
-	   android:summary=" Unavailable">
-	</PreferenceScreen>
-
-	<PreferenceScreen
-	   android:key="rom_patch"
-	   android:title="Check for fixes"
-	   android:summary=" Unavailable">
+	   android:title="Check for updates"
+	   android:summary=" Click to check">
 	</PreferenceScreen>
 
       </PreferenceCategory>
@@ -112,6 +94,7 @@
 	   android:summary=" Define how to wake up the phone"
 	   android:entries="@array/entries_wake"
 	   android:entryValues="@array/entryvalues_wake"
+	   android:defaultValue="1"
 	   android:dialogTitle="Select an option" />
 
 	<CheckBoxPreference
@@ -187,7 +170,7 @@
 
       <PreferenceScreen
 	 android:title="Stock apps"
-	 android:summary="Stock apps that you can add/remove">
+	 android:summary="Stock apps that you can (only) remove">
 
 	<CheckBoxPreference
 	   android:key="car_home"
@@ -275,9 +258,9 @@
 
 	<CheckBoxPreference
 	   android:key="notcalllog"
-	   android:title="No CallLog after call"
-	   android:summaryOn=" NotCallLog installed"
-	   android:summaryOff=" NotCallLog not installed" />
+	   android:title="No Call Log after call"
+	   android:summaryOn=" Not Call Log installed"
+	   android:summaryOff=" Not Call Log not installed" />
 
       </PreferenceScreen>
 
@@ -291,6 +274,7 @@
 	   android:summary=" Change the bootanimation"
 	   android:entries="@array/entries_bootanim"
 	   android:entryValues="@array/entryvalues_bootanim"
+	   android:defaultValue="1"
 	   android:dialogTitle="Select an option" />
 
 	<CheckBoxPreference

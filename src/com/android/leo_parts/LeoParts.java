@@ -81,14 +81,11 @@ public class LeoParts extends PreferenceActivity
 
     private boolean extfsIsMounted = false;
 
-    private static final String ROM_NAME_PREF = "rom_name";
-    private static final String ROM_VERSION_PREF = "rom_version";
-    private static final String ROM_BUILD_PREF = "rom_build";
+    private static final String ROM_NAME_VERSION_PREF = "rom_name_version";
+    private static final String ROM_SYSTEM_BUILD_PREF = "rom_system_build";
     private static final String ROM_RADIO_PREF = "rom_radio";
     private static final String ROM_KERNEL_PREF = "rom_kernel";
-    private static final String ROM_SYS_VERSION_PREF = "rom_sys_version";
     private static final String ROM_UPDATE_PREF = "rom_update";
-    private static final String ROM_PATCH_PREF = "rom_patch";
 
     private static final String APP2SD_PREF = "app2sd";
     private static final String UI_SOUNDS_PREF = "ui_sounds";
@@ -149,7 +146,7 @@ public class LeoParts extends PreferenceActivity
     private final Configuration mCurConfig = new Configuration();
 
     private Preference mUpdatePref;
-    private Preference mPatchPref;
+    private int PATCH = 0;
 
     private ListPreference mApp2sdPref;
     private CheckBoxPreference mUiSoundsPref;
@@ -202,15 +199,6 @@ public class LeoParts extends PreferenceActivity
     private Preference mAboutDonate;
     private Preference mAboutSources;
 
-    private ListPreference mWindowAnimationsPref;
-    private ListPreference mTransitionAnimationsPref;
-    private CheckBoxPreference mFancyImeAnimationsPref;
-    private CheckBoxPreference mHapticFeedbackPref;
-    private ListPreference mFontSizePref;
-    private ListPreference mEndButtonPref;
-    private CheckBoxPreference mShowMapsCompassPref;
-    private CheckBoxPreference mCompatibilityMode;
-
     private IWindowManager mWindowManager;
 
     public static boolean updatePreferenceToSpecificActivityOrRemove(Context context,
@@ -248,23 +236,66 @@ public class LeoParts extends PreferenceActivity
 	return true;
     }
 
+    public static String removeChar(String s, char c) {
+	String r = "";
+	for (int i = 0; i < s.length(); i ++)
+	    if (s.charAt(i) != c)
+		r += s.charAt(i);
+	return r;
+    }
+
+    // N: name
+    // V: version
+    // P: patch
+    // B: BETA-build
+
+    public String getRomName() {
+	String name = Build.DISPLAY; // N_VpP(-B)?
+	name = name.substring(0, name.indexOf('_')); // N
+	return name;
+    }
+
+    public String getRomVersion() {
+	String version = Build.DISPLAY; // N_VpP(-B)?
+	version = version.substring(version.indexOf('_') + 1, version.indexOf('p')); // V
+	return version;
+    }
+
+    public String getRomPatch() {
+	String patch = Build.DISPLAY; // N_VpP(-B)?
+	if (isRomBeta()) // P-B
+	    patch = patch.substring(patch.indexOf('p') + 1, patch.indexOf('-')); // P
+	else // P
+	    patch = patch.substring(patch.indexOf('p') + 1, patch.length()); // P
+	return patch;
+    }
+
+    public boolean isRomBeta() {
+	String beta = Build.DISPLAY; // N_VpP(-B)?
+	return beta.contains("-BETA");
+    }
+
     public void askToApplyPatch() {
+	final int patch = Integer.parseInt(getRomPatch()) + 1;
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	builder.setMessage("Patch found!\nWould you like to apply?")
+	builder.setTitle("Leo Updater")
+	    .setMessage("Patch: " + getRomVersion() + "-patch" + patch + "\nWould you like to apply?")
 	    .setCancelable(false)
-	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	    .setPositiveButton("Hell yeah", new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int id) {
-			setStringSummary(ROM_PATCH_PREF, " Patch applied.");
+			setStringSummary(ROM_UPDATE_PREF, " Patch #" + PATCH + " applied.");
+			setStringSummary(ROM_NAME_VERSION_PREF, getRomName() + "  /  " + getRomVersion() + "  /  patch" + patch);
 			String[] commands = {
-			    REMOUNT_RW,
-			    "chmod 755 /data/local/patch",
 			    "/data/local/patch",
-			    REMOUNT_RO
+			    REMOUNT_RW,
+			    "busybox sed -i 's/_" + getRomVersion() + "p" + getRomPatch() + "/_" + getRomVersion() + "p" + patch + "/' /system/build.prop",
+			    REMOUNT_RO,
+			    "busybox rm -f /data/local/patch"
 			};
-			sendshell(commands, true, "Applying patch...");
+			sendshell(commands, true, "Applying patch #" + PATCH + "...");
 		    }
 		})
-	    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	    .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int id) {
 			dialog.cancel();
 		    }
@@ -273,22 +304,61 @@ public class LeoParts extends PreferenceActivity
 	alert.show();
     }
 
-    final Runnable mPatchFound = new Runnable() {
+    final Runnable mApplyPatch = new Runnable() {
     	    public void run() {
-		patience.dismiss();
-		if (fileExists("/data/local/patch") && getFileSize("/data/local/patch") > 0)
-		    askToApplyPatch();
-		else
-		    popup("Patch", "They were nothing to fix ;)");
-    	    }
-    	};
+		askToApplyPatch();
+	    }
+	};
 
-    public static String removeChar(String s, char c) {
-	String r = "";
-	for (int i = 0; i < s.length(); i ++)
-	    if (s.charAt(i) != c)
-		r += s.charAt(i);
-	return r;
+    public boolean askToUpgrade(final int currentPatch, final int latestPatch) {
+	PATCH = currentPatch + 1;
+	Log.i(TAG, "getting: patch-" + PATCH);
+	patience = ProgressDialog.show(LeoParts.this, "", "Getting patch #" + PATCH + "...", true);
+	Thread t = new Thread() {
+		public void run() {
+		    String[] commands = {
+			"busybox wget -q " + REPO + "patch/patch-" + PATCH + " -O /data/local/patch" +
+			" && busybox chmod 755 /data/local/patch"
+		    };
+		    ShellInterface shell = new ShellInterface(commands);
+		    shell.start();
+		    while (shell.isAlive())
+			{
+			    try {
+				Thread.sleep(500);
+			    }
+			    catch (InterruptedException e) {
+			    }
+			}
+		    if (shell.interrupted())
+			popup("Error", "Download has finished unexpectedly!");
+		    patience.dismiss();
+		    mHandler.post(mApplyPatch);
+		}
+	    };
+	t.start();
+	return true;
+    }
+
+    public void launchUpgrade(final String currentVersion, final int currentPatch, final int latestPatch) {
+	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	builder.setTitle("Leo Updater")
+	    .setMessage("Your ROM (" + currentVersion + ") is up-to-date, but new patch is available.")
+	    .setCancelable(false)
+	    .setPositiveButton("Let's grab it", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int id) {
+			Log.i(TAG, "launchUpgrade");
+			dialog.cancel();
+			askToUpgrade(currentPatch, latestPatch);
+		    }
+		})
+	    .setNegativeButton("I don't care", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int id) {
+			dialog.cancel();
+		    }
+		});
+	AlertDialog alert = builder.create();
+	alert.show();
     }
 
     final Runnable mUpdateDownloaded = new Runnable() {
@@ -298,13 +368,6 @@ public class LeoParts extends PreferenceActivity
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		DataInputStream dis = null;
-		// current
-		String build = Build.DISPLAY;
-		build = build.substring(build.indexOf('_') + 1);
-		build = build.substring(0, build.indexOf('-'));
-		Log.i(TAG, "build: " + build);
-		int currentVersion = Integer.parseInt(removeChar(build, '.'));
-		// latest
 		String version = "0";
 		try {
 		    fis = new FileInputStream(file);
@@ -312,7 +375,6 @@ public class LeoParts extends PreferenceActivity
 		    dis = new DataInputStream(bis);
 		    while (dis.available() != 0) {
 			version = dis.readLine();
-			Log.i(TAG, version);
 			break ;
 		    }
 		    fis.close();
@@ -323,14 +385,36 @@ public class LeoParts extends PreferenceActivity
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
-		int latestVersion = Integer.parseInt(removeChar(version, '.'));
+		// latest
+		final int latestVersion = Integer.parseInt(removeChar(version.substring(0, version.indexOf('p')), '.'));
+		final int latestPatch = Integer.parseInt(version.substring(version.indexOf('p') + 1, version.length()));
+		Log.i(TAG, "latest: " + version);
 		setStringSummary(ROM_UPDATE_PREF, " Latest: " + version);
+		// current
+		final String currentVersionS = getRomVersion();
+		final String currentPatchS = getRomPatch();
+		final int currentVersion = Integer.parseInt(removeChar(currentVersionS, '.'));
+		final int currentPatch = Integer.parseInt(currentPatchS);
+		// check
 		if (currentVersion < latestVersion)
-		    popup("Update", "Your ROM (v" + build + ") is OUTDATED!\nGet the new one (v" + version + ") ;)");
-		else if (currentVersion > latestVersion)
-		    popup("Update", "Your ROM (v" + build + ") is a BETA. Nice ;)");
+		    popup("Leo Updater", "Your ROM (" + currentVersionS +
+			  ") is OUTDATED!\nGet the new one (" + version + ") ;)");
+		else if (currentVersion == latestVersion)
+		    {
+			if (currentPatch < latestPatch)
+			    launchUpgrade(currentVersionS + "p" + currentPatchS,
+					  currentVersion * 10 + currentPatch,
+					  currentVersion * 10 + latestPatch);
+			else if (currentPatch == latestPatch)
+			    popup("Leo Updater", "Your ROM (" + currentVersionS +
+				  ") is up-to-date!");
+			else
+			    popup("Leo Updater", "Your ROM (" + currentVersionS + "p" + currentPatchS +
+				  ") has a BETA patch applied.\nLeo would be proud ;)");
+		    }
 		else
-		    popup("Update", "Your ROM (v" + build + ") is up-to-date ;)");
+		    popup("Leo Updater", "Your ROM (" + currentVersionS +
+			  ") is a BETA.\nLeo would be proud ;)");
     	    }
     	};
 
@@ -345,34 +429,21 @@ public class LeoParts extends PreferenceActivity
 	PreferenceScreen prefSet = getPreferenceScreen();
 	REPO = getResources().getString(R.string.repo_url);
 
-	String build = Build.DISPLAY;
-	String rom_name = build;
-	if (build.contains("_"))
-	    rom_name = build.substring(0, build.indexOf('_'));
-
-	setStringSummary(ROM_NAME_PREF, rom_name);
-	if (build.contains("_"))
-	    setStringSummary(ROM_VERSION_PREF, build.substring(build.indexOf('_') + 1));
-	else
-	    {
-		setStringSummary(ROM_VERSION_PREF, " Unavailable");
-		mUpdatePref.setEnabled(false);
-	    }
-	setStringSummary(ROM_BUILD_PREF, Build.ID + " " + (fileExists("/system/framework/framework.odex") ? "odex" : "deodex") + "  /  " + getFormattedFingerprint());
-	String radio = getSystemValue("gsm.version.baseband");
-	setStringSummary(ROM_RADIO_PREF, radio.substring(radio.indexOf('_') + 1, radio.length()));
-	setStringSummary(ROM_SYS_VERSION_PREF, "Android " + Build.VERSION.RELEASE);
-	findPreference(ROM_KERNEL_PREF).setSummary(getFormattedKernelVersion());
+	setStringSummary(ROM_NAME_VERSION_PREF, getRomName() + "  /  " + getRomVersion() + "  /  patch" + getRomPatch());
+	setStringSummary(ROM_SYSTEM_BUILD_PREF, "Android " + Build.VERSION.RELEASE + "  /  " + Build.ID + " " + (fileExists("/system/framework/framework.odex") ? "odex" : "deodex") + "  /  " + getFormattedFingerprint());
+	setStringSummary(ROM_RADIO_PREF, getSystemValue("gsm.version.baseband"));
+	String kernel = getFormattedKernelVersion();
+	findPreference(ROM_KERNEL_PREF).setSummary((kernel.equals("2.6.32.9\nandroid-build@apa26") ? "stock " : "") + getFormattedKernelVersion());
 
 	mUpdatePref = (Preference) prefSet.findPreference(ROM_UPDATE_PREF);
 	findPreference(ROM_UPDATE_PREF)
 	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
 		    public boolean onPreferenceClick(Preference preference) {
-			patience = ProgressDialog.show(LeoParts.this, "", "Checking for a new ROM version...", true);
+			patience = ProgressDialog.show(LeoParts.this, "", "Checking for latest ROM version and patches...", true);
 			Thread t = new Thread() {
 				public void run() {
 				    String[] commands = {
-					"busybox wget -q " + REPO + "version -O /data/local/tmp/version"
+					"busybox wget -q " + REPO + "version-test -O /data/local/tmp/version"
 				    };
 				    ShellInterface shell = new ShellInterface(commands);
 				    shell.start();
@@ -388,37 +459,6 @@ public class LeoParts extends PreferenceActivity
 					popup("Error", "Download or install has finished unexpectedly!");
 				    else
 					mHandler.post(mUpdateDownloaded);
-				}
-			    };
-			t.start();
-			return true;
-		    }
-		});
-
-	mPatchPref = (Preference) prefSet.findPreference(ROM_PATCH_PREF);
-	findPreference(ROM_PATCH_PREF)
-	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		    public boolean onPreferenceClick(Preference preference) {
-			patience = ProgressDialog.show(LeoParts.this, "", "Checking for a known and fixed issue...", true);
-			Thread t = new Thread() {
-				public void run() {
-				    String[] commands = {
-					"busybox wget -q " + REPO + "patch -O /data/local/patch && busybox chmod 755 /data/local/patch"
-				    };
-				    ShellInterface shell = new ShellInterface(commands);
-				    shell.start();
-				    while (shell.isAlive())
-					{
-					    try {
-						Thread.sleep(500);
-					    }
-					    catch (InterruptedException e) {
-					    }
-					}
-				    if (shell.interrupted())
-					popup("Error", "Download or install has finished unexpectedly!");
-				    else
-					mHandler.post(mPatchFound);
 				}
 			    };
 			t.start();
@@ -628,8 +668,8 @@ public class LeoParts extends PreferenceActivity
 	mFileManagerPref.setEnabled(fileExists("/system/app/FileManager.apk"));
 	mSaveNumPref.setChecked(fileExists("/system/app/SaveNum.apk"));
 	mSaveNumPref.setEnabled(fileExists("/system/app/SaveNum.apk"));
-	mTerminalPref.setChecked(fileExists("/system/app/Term.apk"));
-	mTerminalPref.setEnabled(fileExists("/system/app/Term.apk"));
+	mTerminalPref.setChecked(fileExists("/system/app/Terminal.apk"));
+	mTerminalPref.setEnabled(fileExists("/system/app/Terminal.apk"));
 	mTeslaFlashlightPref.setChecked(fileExists("/system/app/TeslaFlashlight.apk"));
 	mTeslaFlashlightPref.setEnabled(fileExists("/system/app/TeslaFlashlight.apk"));
 	mTrackballAlertPref.setChecked(fileExists("/system/app/TrackballAlert.apk"));
@@ -766,7 +806,7 @@ public class LeoParts extends PreferenceActivity
 	    String[] commands = {
 		"pm setInstallLocation " + objValue
 	    };
-	    sendshell(commands, false, "Activating app2sd...");
+	    sendshell(commands, false, "Activating stock app2sd...");
 	}
 	else if (preference == mUiSoundsPref) {
 	    boolean have = mUiSoundsPref.isChecked();
@@ -821,8 +861,8 @@ public class LeoParts extends PreferenceActivity
 	    return removeSystemApp(mTwitterPref, "Twitter");
 	else if (preference == mYouTubePref)
 	    return removeSystemApp(mYouTubePref, "YouTube");
-else if (preference == mADWLauncherPref)
-	    return installOrRemoveAddon(mCpuLedPref, REPO + "ADWLauncher.apk", false, "ADWLauncher", "org.adw.launcher");
+	else if (preference == mADWLauncherPref)
+	    return removeSystemApp(mYouTubePref, "ADWLauncher");
 	else if (preference == mFileManagerPref)
 	    return removeSystemApp(mFileManagerPref, "FileManager");
 	else if (preference == mSaveNumPref)
@@ -851,48 +891,33 @@ else if (preference == mADWLauncherPref)
 	else if (preference == mWakePref) {
 	    if (objValue.toString().equals("0")) {
 		String[] commands = {
-		    "pm uninstall i4nc4mp.myLock.froyo",
 		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "stock-android.policy.jar -O /data/local/tmp/android.policy.jar" +
 		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar" +
 		    " && busybox chmod 644 /system/framework/android.policy.jar",
 		    REMOUNT_RO
 		};
-		sendshell(commands, true, "Removing myLock and restoring stock parameters...");
+		sendshell(commands, true, "Restoring stock parameters...");
 	    }
 	    else if (objValue.toString().equals("1")) {
 		String[] commands = {
-		    "busybox wget -q " + REPO + "wake.apk -O /data/local/tmp/wake.apk" +
-		    " && pm install -r /data/local/tmp/wake.apk ; busybox rm -f /data/local/tmp/wake.apk",
-		    REMOUNT_RW,
-		    "busybox wget -q " + REPO + "stock-android.policy.jar -O /data/local/tmp/android.policy.jar" +
-		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar" +
-		    " && busybox chmod 644 /system/framework/android.policy.jar",
-		    REMOUNT_RO
-		};
-		sendshell(commands, true, "Downloading, installing and configuring myLock...");
-	    }
-	    else if (objValue.toString().equals("2")) {
-		String[] commands = {
-		    "pm uninstall i4nc4mp.myLock.froyo",
 		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "wake-android.policy.jar -O /data/local/tmp/android.policy.jar" +
 		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar" +
 		    " && busybox chmod 644 /system/framework/android.policy.jar",
 		    REMOUNT_RO
 		};
-		sendshell(commands, true, "Downloading Trackball Wake...");
+		sendshell(commands, true, "Downloading and patching Trackball Wake...");
 	    }
-	    else if (objValue.toString().equals("3")) {
+	    else if (objValue.toString().equals("2")) {
 		String[] commands = {
-		    "pm uninstall i4nc4mp.myLock.froyo",
 		    REMOUNT_RW,
 		    "busybox wget -q " + REPO + "unlock-android.policy.jar -O /data/local/tmp/android.policy.jar" +
 		    " && busybox mv /data/local/tmp/android.policy.jar /system/framework/android.policy.jar" +
 		    " && busybox chmod 644 /system/framework/android.policy.jar",
 		    REMOUNT_RO
 		};
-		sendshell(commands, true, "Downloading Trackball Wake+unlock...");
+		sendshell(commands, true, "Downloading and patching Trackball Wake+unlock...");
 	    }
 	}
 	else if (preference == mFontsPref)
@@ -1105,22 +1130,25 @@ else if (preference == mADWLauncherPref)
     	    }
     	};
 
-    public boolean sendshell(final String[] commands, final boolean reboot, String message) {
-	patience = ProgressDialog.show(this, "", message, true);
+    public boolean sendshell(final String[] commands, final boolean reboot, final String message) {
+	if (message != null)
+	    patience = ProgressDialog.show(this, "", message, true);
 	Thread t = new Thread() {
 		public void run() {
 		    ShellInterface shell = new ShellInterface(commands);
 		    shell.start();
 		    while (shell.isAlive())
 			{
-			    patience.setProgress(shell.getStatus());
+			    if (message != null)
+				patience.setProgress(shell.getStatus());
 			    try {
 				Thread.sleep(500);
 			    }
 			    catch (InterruptedException e) {
 			    }
 			}
-		    mHandler.post(mCommandFinished);
+		    if (message != null)
+			mHandler.post(mCommandFinished);
 		    if (shell.interrupted())
 			popup("Error", "Download or install has finished unexpectedly!");
 		    if (reboot == true)
@@ -1138,10 +1166,10 @@ else if (preference == mADWLauncherPref)
 	    .setCancelable(false)
 	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		    public void onClick(DialogInterface dialog, int id) {
-			try {
-			    Runtime.getRuntime().exec("su -c reboot");
-			} catch(IOException e) {
-			}
+			String[] commands = {
+			    "reboot"
+			};
+			sendshell(commands, false, "Rebooting...");
 		    }
 		})
 	    .setNegativeButton("No", new DialogInterface.OnClickListener() {
