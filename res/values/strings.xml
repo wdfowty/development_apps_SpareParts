@@ -20,8 +20,8 @@
 <resources>
     <string name="app_label">Leo Parts</string>
 
-    <string name="repo_name">default</string>
-    <string name="repo_url">http://android.shk-desktop.com/SpareParts/</string>
+    <string name="repo_name">LeoFroYo</string>
+    <string name="repo_url">http://android.shk-desktop.com/LeoParts/</string>
 
     <string name="title_color_picker">Pick a color</string>
     <string name="msg_color_picker">Tap on center color to confirm.\nPress back to cancel.</string>

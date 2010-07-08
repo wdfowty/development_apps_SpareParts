@@ -89,6 +89,15 @@
 	 android:title="Advanced">
 
 	<ListPreference
+	   android:key="notif_bar"
+	   android:title="Notification Bar colors"
+	   android:summary=" Define the colors in the notif. bar"
+	   android:entries="@array/entries_notif_bar"
+	   android:entryValues="@array/entryvalues_notif_bar"
+	   android:defaultValue="1"
+	   android:dialogTitle="Select an option" />
+
+	<ListPreference
 	   android:key="trackball_wake"
 	   android:title="Trackball wake"
 	   android:summary=" Define how to wake up the phone"
@@ -168,152 +177,156 @@
        android:title="Apps &amp; Addons"
        android:summary="Install/remove stock apps &amp; addons">
 
-      <PreferenceScreen
-	 android:title="Stock apps"
-	 android:summary="Stock apps that you can (only) remove">
+      <PreferenceCategory
+	 android:title="Add/Remove">
 
-	<CheckBoxPreference
-	   android:key="car_home"
-	   android:title="Car Home"
-	   android:summaryOn=" Car Home installed"
-	   android:summaryOff=" Car Home not installed" />
+	<PreferenceScreen
+	   android:title="Stock apps"
+	   android:summary="Stock apps that you can (only) remove">
 
-	<CheckBoxPreference
-	   android:key="email"
-	   android:title="Email"
-	   android:summaryOn=" Email installed"
-	   android:summaryOff=" Email not installed" />
+	  <CheckBoxPreference
+	     android:key="car_home"
+	     android:title="Car Home"
+	     android:summaryOn=" Car Home installed"
+	     android:summaryOff=" Car Home not installed" />
 
-	<CheckBoxPreference
-	   android:key="facebook"
-	   android:title="Facebook"
-	   android:summaryOn=" Facebook installed"
-	   android:summaryOff=" Facebook not installed" />
+	  <CheckBoxPreference
+	     android:key="email"
+	     android:title="Email"
+	     android:summaryOn=" Email installed"
+	     android:summaryOff=" Email not installed" />
 
-	<CheckBoxPreference
-	   android:key="twitter"
-	   android:title="Twitter"
-	   android:summaryOn=" Twitter installed"
-	   android:summaryOff=" Twitter not installed" />
+	  <CheckBoxPreference
+	     android:key="facebook"
+	     android:title="Facebook"
+	     android:summaryOn=" Facebook installed"
+	     android:summaryOff=" Facebook not installed" />
 
-	<CheckBoxPreference
-	   android:key="youtube"
-	   android:title="Youtube"
-	   android:summaryOn=" Youtube installed"
-	   android:summaryOff=" Youtube not installed" />
+	  <CheckBoxPreference
+	     android:key="twitter"
+	     android:title="Twitter"
+	     android:summaryOn=" Twitter installed"
+	     android:summaryOff=" Twitter not installed" />
 
-      </PreferenceScreen>
+	  <CheckBoxPreference
+	     android:key="youtube"
+	     android:title="Youtube"
+	     android:summaryOn=" Youtube installed"
+	     android:summaryOff=" Youtube not installed" />
 
-      <PreferenceScreen
-	 android:title="Integrated addons"
-	 android:summary="Additional apps installed by default">
+	</PreferenceScreen>
 
-	<CheckBoxPreference
-	   android:key="adwlauncher"
-	   android:title="ADWLauncher"
-	   android:summaryOn=" ADWLauncher installed"
-	   android:summaryOff=" ADWLauncher not installed" />
+	<PreferenceScreen
+	   android:title="Integrated addons"
+	   android:summary="Additional apps installed by default">
 
-	<CheckBoxPreference
-	   android:key="filemanager"
-	   android:title="File manager"
-	   android:summaryOn=" File manager installed"
-	   android:summaryOff=" File manager not installed" />
+	  <CheckBoxPreference
+	     android:key="adwlauncher"
+	     android:title="ADWLauncher"
+	     android:summaryOn=" ADWLauncher installed"
+	     android:summaryOff=" ADWLauncher not installed" />
 
-	<CheckBoxPreference
-	   android:key="savenum"
-	   android:title="SaveNum"
-	   android:summaryOn=" SaveNum installed"
-	   android:summaryOff=" SaveNum not installed" />
+	  <CheckBoxPreference
+	     android:key="filemanager"
+	     android:title="File manager"
+	     android:summaryOn=" File manager installed"
+	     android:summaryOff=" File manager not installed" />
 
-	<CheckBoxPreference
-	   android:key="terminal"
-	   android:title="Terminal"
-	   android:summaryOn=" Terminal installed"
-	   android:summaryOff=" Terminal not installed" />
+	  <CheckBoxPreference
+	     android:key="savenum"
+	     android:title="SaveNum"
+	     android:summaryOn=" SaveNum installed"
+	     android:summaryOff=" SaveNum not installed" />
 
-	<CheckBoxPreference
-	   android:key="tesla_flashlight"
-	   android:title="Tesla flashlight"
-	   android:summaryOn=" Tesla flashlight installed"
-	   android:summaryOff=" Tesla flashlight not installed" />
+	  <CheckBoxPreference
+	     android:key="terminal"
+	     android:title="Terminal"
+	     android:summaryOn=" Terminal installed"
+	     android:summaryOff=" Terminal not installed" />
 
-	<CheckBoxPreference
-	   android:key="trackball_alert"
-	   android:title="Trackball Alert"
-	   android:summaryOn=" Trackball Alert installed"
-	   android:summaryOff=" Trackball Alert not installed" />
+	  <CheckBoxPreference
+	     android:key="tesla_flashlight"
+	     android:title="Tesla flashlight"
+	     android:summaryOn=" Tesla flashlight installed"
+	     android:summaryOff=" Tesla flashlight not installed" />
 
-	<CheckBoxPreference
-	   android:key="metamorph"
-	   android:title="Metamorph"
-	   android:summaryOn=" Metamorph installed"
-	   android:summaryOff=" Metamorph not installed" />
+	  <CheckBoxPreference
+	     android:key="trackball_alert"
+	     android:title="Trackball Alert"
+	     android:summaryOn=" Trackball Alert installed"
+	     android:summaryOff=" Trackball Alert not installed" />
 
-	<CheckBoxPreference
-	   android:key="barcode"
-	   android:title="Barcode scanner"
-	   android:summaryOn=" Barcode scanner installed"
-	   android:summaryOff=" Barcode scanner not installed" />
+	  <CheckBoxPreference
+	     android:key="metamorph"
+	     android:title="Metamorph"
+	     android:summaryOn=" Metamorph installed"
+	     android:summaryOff=" Metamorph not installed" />
 
-	<CheckBoxPreference
-	   android:key="notcalllog"
-	   android:title="No Call Log after call"
-	   android:summaryOn=" Not Call Log installed"
-	   android:summaryOff=" Not Call Log not installed" />
+	  <CheckBoxPreference
+	     android:key="barcode"
+	     android:title="Barcode scanner"
+	     android:summaryOn=" Barcode scanner installed"
+	     android:summaryOff=" Barcode scanner not installed" />
 
-      </PreferenceScreen>
+	  <CheckBoxPreference
+	     android:key="notcalllog"
+	     android:title="No Call Log after call"
+	     android:summaryOn=" Not Call Log installed"
+	     android:summaryOff=" Not Call Log not installed" />
 
-      <PreferenceScreen
-	 android:title="Addons"
-	 android:summary="Apps to boost user experience">
+	</PreferenceScreen>
 
-	<ListPreference
-	   android:key="bootanim"
-	   android:title="Bootanimation"
-	   android:summary=" Change the bootanimation"
-	   android:entries="@array/entries_bootanim"
-	   android:entryValues="@array/entryvalues_bootanim"
-	   android:defaultValue="1"
-	   android:dialogTitle="Select an option" />
+	<PreferenceScreen
+	   android:title="Addons"
+	   android:summary="Apps to boost user experience">
 
-	<CheckBoxPreference
-	   android:key="fonts"
-	   android:title="Additional fonts"
-	   android:summaryOn=" Fonts installed"
-	   android:summaryOff=" Fonts not installed" />
+	  <ListPreference
+	     android:key="bootanim"
+	     android:title="Bootanimation"
+	     android:summary=" Change the bootanimation"
+	     android:entries="@array/entries_bootanim"
+	     android:entryValues="@array/entryvalues_bootanim"
+	     android:defaultValue="1"
+	     android:dialogTitle="Select an option" />
 
-	<CheckBoxPreference
-	   android:key="htc_ime"
-	   android:title="HTC_IME keyboard"
-	   android:summaryOn=" HTC_IME installed"
-	   android:summaryOff=" HTC_IME not installed" />
+	  <CheckBoxPreference
+	     android:key="fonts"
+	     android:title="Additional fonts"
+	     android:summaryOn=" Fonts installed"
+	     android:summaryOff=" Fonts not installed" />
 
-	<CheckBoxPreference
-	   android:key="cpu_led"
-	   android:title="%CPU LED monitor"
-	   android:summaryOn=" NetMeter+LED installed"
-	   android:summaryOff=" NetMeter+LED not installed" />
+	  <CheckBoxPreference
+	     android:key="htc_ime"
+	     android:title="HTC_IME keyboard"
+	     android:summaryOn=" HTC_IME installed"
+	     android:summaryOff=" HTC_IME not installed" />
 
-	<CheckBoxPreference
-	   android:key="galaxy_lwp"
-	   android:title="Samsung Galaxy LWPs"
-	   android:summaryOn=" Galaxy LWPs installed"
-	   android:summaryOff=" Galaxy LWPs not installed" />
+	  <CheckBoxPreference
+	     android:key="cpu_led"
+	     android:title="%CPU LED monitor"
+	     android:summaryOn=" NetMeter+LED installed"
+	     android:summaryOff=" NetMeter+LED not installed" />
 
-	<CheckBoxPreference
-	   android:key="player"
-	   android:title="DivX/XviD player"
-	   android:summaryOn=" RockPlayer installed"
-	   android:summaryOff=" RockPlayer not installed" />
+	  <CheckBoxPreference
+	     android:key="player"
+	     android:title="DivX/XviD player"
+	     android:summaryOn=" RockPlayer installed"
+	     android:summaryOff=" RockPlayer not installed" />
 
-	<CheckBoxPreference
-	   android:key="remvol"
-	   android:title="Hedset volume ctrl."
-	   android:summaryOn=" Remvol installed"
-	   android:summaryOff=" Remvol not installed" />
+	</PreferenceScreen>
 
-      </PreferenceScreen>
+      </PreferenceCategory>
+
+      <PreferenceCategory
+	 android:title="Refresh">
+
+	<PreferenceScreen
+	   android:key="reload_apps"
+	   android:title="Re-check apps"
+	   android:summary=" Click to re-check installed apps">
+	</PreferenceScreen>
+
+      </PreferenceCategory>
 
     </PreferenceScreen>
 
@@ -337,6 +350,18 @@
 	 android:key="about_donate"
 	 android:title="Donate"
 	 android:summary=" Donate via PayPal">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="about_thanks"
+	 android:title="Special thanks to"
+	 android:summary=" britoso, Darktremor and others\n All XDA community">
+      </PreferenceScreen>
+
+      <PreferenceScreen
+	 android:key="about_addond"
+	 android:title="Addons"
+	 android:summary=" Apps and Addons are not mine\n thx to all of their authors">
       </PreferenceScreen>
 
       <PreferenceScreen

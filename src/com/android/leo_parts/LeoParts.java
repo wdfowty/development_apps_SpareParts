@@ -64,6 +64,7 @@ import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -88,6 +89,7 @@ public class LeoParts extends PreferenceActivity
     private static final String ROM_UPDATE_PREF = "rom_update";
 
     private static final String APP2SD_PREF = "app2sd";
+    private static final String NOTIF_BAR_PREF = "notif_bar";
     private static final String UI_SOUNDS_PREF = "ui_sounds";
     private static final String FIX_PERMS_PREF = "fix_perms";
     private static final String ZIPALIGN_PREF = "zipalign";
@@ -119,9 +121,9 @@ public class LeoParts extends PreferenceActivity
     private static final String FONTS_PREF = "fonts";
     private static final String HTC_IME_PREF = "htc_ime";
     private static final String CPU_LED_PREF = "cpu_led";
-    private static final String GALAXY_LWP_PREF = "galaxy_lwp";
     private static final String PLAYER_PREF = "player";
-    private static final String REMVOL_PREF = "remvol";
+
+    private static final String RELOAD_APPS_PREF = "reload_apps";
 
     private static final String SYSTEM_PART_SIZE = "system_storage_levels";
     private static final String SYSTEM_STORAGE_PATH = "/system";
@@ -149,6 +151,7 @@ public class LeoParts extends PreferenceActivity
     private int PATCH = 0;
 
     private ListPreference mApp2sdPref;
+    private ListPreference mNotifBarPref;
     private CheckBoxPreference mUiSoundsPref;
     private CheckBoxPreference mFixPermsPref;
     private CheckBoxPreference mZipAlignPref;
@@ -180,9 +183,9 @@ public class LeoParts extends PreferenceActivity
     private CheckBoxPreference mFontsPref;
     private CheckBoxPreference mHtcImePref;
     private CheckBoxPreference mCpuLedPref;
-    private CheckBoxPreference mGalaxyLWPPref;
     private CheckBoxPreference mPlayerPref;
-    private CheckBoxPreference mRemvolPref;
+
+    private Preference mReloadAppsPref;
 
     private Preference mSystemSize;
     private Preference mDataSize;
@@ -200,41 +203,6 @@ public class LeoParts extends PreferenceActivity
     private Preference mAboutSources;
 
     private IWindowManager mWindowManager;
-
-    public static boolean updatePreferenceToSpecificActivityOrRemove(Context context,
-	    PreferenceGroup parentPreferenceGroup, String preferenceKey, int flags) {
-
-	Preference preference = parentPreferenceGroup.findPreference(preferenceKey);
-	if (preference == null) {
-	    return false;
-	}
-
-	Intent intent = preference.getIntent();
-	if (intent != null) {
-	    // Find the activity that is in the system image
-	    PackageManager pm = context.getPackageManager();
-	    List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
-	    int listSize = list.size();
-	    for (int i = 0; i < listSize; i++) {
-		ResolveInfo resolveInfo = list.get(i);
-		if ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)
-			!= 0) {
-
-		    // Replace the intent with this specific activity
-		    preference.setIntent(new Intent().setClassName(
-			    resolveInfo.activityInfo.packageName,
-			    resolveInfo.activityInfo.name));
-
-		    return true;
-		}
-	    }
-	}
-
-	// Did not find a matching activity, so remove the preference
-	parentPreferenceGroup.removePreference(preference);
-
-	return true;
-    }
 
     public static String removeChar(String s, char c) {
 	String r = "";
@@ -270,13 +238,23 @@ public class LeoParts extends PreferenceActivity
 	return patch;
     }
 
+    public int getRomBeta() {
+	String beta = Build.DISPLAY; // N_VpP(-B)?
+	if (isRomBeta()) {
+	    beta = beta.substring(beta.indexOf('p'), beta.length());
+	    beta = beta.substring(beta.indexOf('-') + 5, beta.indexOf('-') + 6);
+	    return Integer.parseInt(beta);
+	}
+	return 0;
+    }
+
     public boolean isRomBeta() {
 	String beta = Build.DISPLAY; // N_VpP(-B)?
 	return beta.contains("-BETA");
     }
 
     public void askToApplyPatch() {
-	final int patch = Integer.parseInt(getRomPatch()) + 1;
+	final int patch = (PATCH - Integer.parseInt(removeChar(getRomVersion(), '.')) * 10);
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	builder.setTitle("Leo Updater")
 	    .setMessage("Patch: " + getRomVersion() + "-patch" + patch + "\nWould you like to apply?")
@@ -310,8 +288,8 @@ public class LeoParts extends PreferenceActivity
 	    }
 	};
 
-    public boolean askToUpgrade(final int currentPatch, final int latestPatch) {
-	PATCH = currentPatch + 1;
+    public boolean askToUpgrade(final int latestPatch) {
+	PATCH = latestPatch;
 	Log.i(TAG, "getting: patch-" + PATCH);
 	patience = ProgressDialog.show(LeoParts.this, "", "Getting patch #" + PATCH + "...", true);
 	Thread t = new Thread() {
@@ -332,7 +310,7 @@ public class LeoParts extends PreferenceActivity
 			}
 		    if (shell.interrupted())
 			popup("Error", "Download has finished unexpectedly!");
-		    patience.dismiss();
+		    patience.cancel();
 		    mHandler.post(mApplyPatch);
 		}
 	    };
@@ -340,7 +318,7 @@ public class LeoParts extends PreferenceActivity
 	return true;
     }
 
-    public void launchUpgrade(final String currentVersion, final int currentPatch, final int latestPatch) {
+    public void launchUpgrade(final String currentVersion, final int latestPatch) {
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	builder.setTitle("Leo Updater")
 	    .setMessage("Your ROM (" + currentVersion + ") is up-to-date, but new patch is available.")
@@ -349,7 +327,7 @@ public class LeoParts extends PreferenceActivity
 		    public void onClick(DialogInterface dialog, int id) {
 			Log.i(TAG, "launchUpgrade");
 			dialog.cancel();
-			askToUpgrade(currentPatch, latestPatch);
+			askToUpgrade(latestPatch);
 		    }
 		})
 	    .setNegativeButton("I don't care", new DialogInterface.OnClickListener() {
@@ -363,7 +341,7 @@ public class LeoParts extends PreferenceActivity
 
     final Runnable mUpdateDownloaded = new Runnable() {
     	    public void run() {
-		patience.dismiss();
+		patience.cancel();
 		File file = new File("/data/local/tmp/version");
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
@@ -389,7 +367,7 @@ public class LeoParts extends PreferenceActivity
 		final int latestVersion = Integer.parseInt(removeChar(version.substring(0, version.indexOf('p')), '.'));
 		final int latestPatch = Integer.parseInt(version.substring(version.indexOf('p') + 1, version.length()));
 		Log.i(TAG, "latest: " + version);
-		setStringSummary(ROM_UPDATE_PREF, " Latest: " + version);
+		setStringSummary(ROM_UPDATE_PREF, " Latest: " + version.replaceFirst("p", "-patch"));
 		// current
 		final String currentVersionS = getRomVersion();
 		final String currentPatchS = getRomPatch();
@@ -397,24 +375,19 @@ public class LeoParts extends PreferenceActivity
 		final int currentPatch = Integer.parseInt(currentPatchS);
 		// check
 		if (currentVersion < latestVersion)
-		    popup("Leo Updater", "Your ROM (" + currentVersionS +
-			  ") is OUTDATED!\nGet the new one (" + version + ") ;)");
+		    popup("Leo Updater", "Your ROM (" + currentVersionS + "-patch" + currentPatchS + ") is OUTDATED!\nGet the new one (" + version.replaceFirst("p", "-patch") + ") ;)");
 		else if (currentVersion == latestVersion)
 		    {
 			if (currentPatch < latestPatch)
-			    launchUpgrade(currentVersionS + "p" + currentPatchS,
-					  currentVersion * 10 + currentPatch,
+			    launchUpgrade(currentVersionS + "-patch" + currentPatchS,
 					  currentVersion * 10 + latestPatch);
 			else if (currentPatch == latestPatch)
-			    popup("Leo Updater", "Your ROM (" + currentVersionS +
-				  ") is up-to-date!");
+			    popup("Leo Updater", "Your ROM (" + currentVersionS + "-patch" + currentPatchS + ") is up-to-date!");
 			else
-			    popup("Leo Updater", "Your ROM (" + currentVersionS + "p" + currentPatchS +
-				  ") has a BETA patch applied.\nLeo would be proud ;)");
+			    popup("Leo Updater", "Your ROM (" + currentVersionS + "-patch" + currentPatchS + ") has a BETA patch applied.\nLeo would be proud ;)");
 		    }
 		else
-		    popup("Leo Updater", "Your ROM (" + currentVersionS +
-			  ") is a BETA.\nLeo would be proud ;)");
+		    popup("Leo Updater", "Your ROM (" + currentVersionS + "-patch" + currentPatchS + ") is a BETA.\nLeo would be proud ;)");
     	    }
     	};
 
@@ -429,11 +402,11 @@ public class LeoParts extends PreferenceActivity
 	PreferenceScreen prefSet = getPreferenceScreen();
 	REPO = getResources().getString(R.string.repo_url);
 
-	setStringSummary(ROM_NAME_VERSION_PREF, getRomName() + "  /  " + getRomVersion() + "  /  patch" + getRomPatch());
+	setStringSummary(ROM_NAME_VERSION_PREF, getRomName() + "  /  " + (isRomBeta() ? getRomVersion() + "-BETA" + getRomBeta() : getRomVersion() )+ "  /  patch" + getRomPatch());
 	setStringSummary(ROM_SYSTEM_BUILD_PREF, "Android " + Build.VERSION.RELEASE + "  /  " + Build.ID + " " + (fileExists("/system/framework/framework.odex") ? "odex" : "deodex") + "  /  " + getFormattedFingerprint());
 	setStringSummary(ROM_RADIO_PREF, getSystemValue("gsm.version.baseband"));
 	String kernel = getFormattedKernelVersion();
-	findPreference(ROM_KERNEL_PREF).setSummary((kernel.equals("2.6.32.9\nandroid-build@apa26") ? "stock " : "") + getFormattedKernelVersion());
+	findPreference(ROM_KERNEL_PREF).setSummary((kernel.equals("2.6.32.9\nandroid-build@apa26") ? "stock " : "") + kernel);
 
 	mUpdatePref = (Preference) prefSet.findPreference(ROM_UPDATE_PREF);
 	findPreference(ROM_UPDATE_PREF)
@@ -443,7 +416,7 @@ public class LeoParts extends PreferenceActivity
 			Thread t = new Thread() {
 				public void run() {
 				    String[] commands = {
-					"busybox wget -q " + REPO + "version-test -O /data/local/tmp/version"
+					"busybox wget -q " + REPO + "version -O /data/local/tmp/version"
 				    };
 				    ShellInterface shell = new ShellInterface(commands);
 				    shell.start();
@@ -468,6 +441,8 @@ public class LeoParts extends PreferenceActivity
 
 	mApp2sdPref = (ListPreference) prefSet.findPreference(APP2SD_PREF);
 	mApp2sdPref.setOnPreferenceChangeListener(this);
+	mNotifBarPref = (ListPreference) prefSet.findPreference(NOTIF_BAR_PREF);
+	mNotifBarPref.setOnPreferenceChangeListener(this);
 	mUiSoundsPref = (CheckBoxPreference) prefSet.findPreference(UI_SOUNDS_PREF);
 	mUiSoundsPref.setOnPreferenceChangeListener(this);
 	mFixPermsPref = (CheckBoxPreference) prefSet.findPreference(FIX_PERMS_PREF);
@@ -571,12 +546,22 @@ public class LeoParts extends PreferenceActivity
 	mHtcImePref.setOnPreferenceChangeListener(this);
 	mCpuLedPref = (CheckBoxPreference) prefSet.findPreference(CPU_LED_PREF);
 	mCpuLedPref.setOnPreferenceChangeListener(this);
-	mGalaxyLWPPref = (CheckBoxPreference) prefSet.findPreference(GALAXY_LWP_PREF);
-	mGalaxyLWPPref.setOnPreferenceChangeListener(this);
 	mPlayerPref = (CheckBoxPreference) prefSet.findPreference(PLAYER_PREF);
 	mPlayerPref.setOnPreferenceChangeListener(this);
-	mRemvolPref = (CheckBoxPreference) prefSet.findPreference(REMVOL_PREF);
-	mRemvolPref.setOnPreferenceChangeListener(this);
+
+	mReloadAppsPref = (Preference) prefSet.findPreference(RELOAD_APPS_PREF);
+	findPreference(RELOAD_APPS_PREF)
+	    .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		    public boolean onPreferenceClick(Preference preference) {
+			String[] commands = {
+			    "echo 42"
+			};
+			sendshell(commands, false, "Checking for apps...");
+			// popup("", "X apps found!");
+			return true;
+		    }
+		});
+	mReloadAppsPref.setEnabled(false);
 
 	mOldApp2sdPref = (CheckBoxPreference) prefSet.findPreference(OLD_APP2SD_PREF);
 	mOldApp2sdPref.setOnPreferenceChangeListener(this);
@@ -642,14 +627,12 @@ public class LeoParts extends PreferenceActivity
 
 	// Current stock
 	mUiSoundsPref.setChecked(fileExists("/system/media/audio/ui/.bak"));
-	mOldApp2sdPref.setChecked(fileExists("/system/sd/app"));
+	mOldApp2sdPref.setChecked(fileExists("/system/sd/app") || fileExists("/system/sd/app-private"));
 	mDalvik2sdPref.setChecked(fileExists("/system/sd/dalvik-cache"));
 	mData2sdPref.setChecked(fileExists("/system/sd/data"));
 	setStringSummary(DATA2SD_PREF, "Unstable for now");
-	mData2sdPref.setEnabled(false);
 	mMedia2sdPref.setChecked(fileExists("/system/sd/media"));
 	setStringSummary(MEDIA2SD_PREF, "Unstable for now");
-	mMedia2sdPref.setEnabled(false);
 
 	mCarHomePref.setChecked(fileExists("/system/app/CarHomeGoogle.apk"));
 	mCarHomePref.setEnabled(fileExists("/system/app/CarHomeGoogle.apk"));
@@ -709,8 +692,6 @@ public class LeoParts extends PreferenceActivity
 
 	// Defaults
 	mFixPermsPref.setChecked(false);
-	//bootanim on 1
-	//wake on 3
 
 	// ext relativ
 	if (!extfsIsMounted){
@@ -758,19 +739,36 @@ public class LeoParts extends PreferenceActivity
 	}
     }
 
-    public boolean removeSystemApp(CheckBoxPreference preference, final String name) {
+    public boolean removeSystemApp(final CheckBoxPreference preference, final String name) {
 	if (!fileExists("/system/app/" + name + ".apk")) {
 	    popup("Error", name + " does not exists in /system/app!");
 	    preference.setChecked(false);
 	    return false;
 	}
-	String[] commands = {
-	    REMOUNT_RW,
-	    "busybox rm -f /system/app/" + name + ".apk",
-	    REMOUNT_RO
-	};
-	sendshell(commands, false, "Removing " + name + "...");
-	preference.setEnabled(false);
+	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	builder.setTitle("Confirm")
+	    .setMessage("Are you sure you want to remove " + name + "?")
+	    .setCancelable(false)
+	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int id) {
+			dialog.cancel();
+			String[] commands = {
+			    REMOUNT_RW,
+			    "busybox rm -f /system/app/" + name + ".apk",
+			    REMOUNT_RO
+			};
+			sendshell(commands, false, "Removing " + name + "...");
+			preference.setEnabled(false);
+		    }
+		})
+	    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int id) {
+			dialog.cancel();
+			preference.setChecked(true);
+		    }
+		});
+	AlertDialog alert = builder.create();
+	alert.show();
 	return true;
     }
 
@@ -801,12 +799,54 @@ public class LeoParts extends PreferenceActivity
 	return true;
     }
 
+    public boolean activate2sd(final CheckBoxPreference preference, final String script) {
+	boolean have = preference.isChecked();
+	if (!have) {
+	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    builder.setTitle("Warning")
+		.setMessage("With low class SDCard, your phone might get really slow...")
+		.setCancelable(false)
+		.setPositiveButton("I have a good one", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+			    dialog.cancel();
+			    String[] commands = {
+				script + " on"
+			    };
+			    sendshell(commands, false, "Moving to sdcard...");
+			}
+		    })
+		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+			    dialog.cancel();
+			    preference.setChecked(false);
+			}
+		    });
+	    AlertDialog alert = builder.create();
+	    alert.show();
+	} else {
+	    String[] commands = {
+		script + " off",
+	    };
+	    sendshell(commands, false, "Restoring to phone...");
+	}
+	return true;
+    }
+
     public boolean onPreferenceChange(Preference preference, Object objValue) {
 	if (preference == mApp2sdPref) {
 	    String[] commands = {
 		"pm setInstallLocation " + objValue
 	    };
 	    sendshell(commands, false, "Activating stock app2sd...");
+	}
+	else if (preference == mNotifBarPref) {
+	    String[] commands = {
+		REMOUNT_RW,
+		"busybox wget -q " + REPO + objValue.toString() + " -O /data/local/tmp/services.jar" +
+		" && busybox mv /data/local/tmp/services.jar /system/framework/services.jar",
+		REMOUNT_RO
+	    };
+	    sendshell(commands, true, "Downloading files and applying new theme...");
 	}
 	else if (preference == mUiSoundsPref) {
 	    boolean have = mUiSoundsPref.isChecked();
@@ -841,17 +881,37 @@ public class LeoParts extends PreferenceActivity
 	    }
 	}
 	else if (preference == mCarHomePref) {
-	    boolean have = mCarHomePref.isChecked();
-	    if (have) {
-		String[] commands = {
-		    REMOUNT_RW,
-		    "busybox rm -f /system/app/CarHomeGoogle.apk",
-		    "busybox rm -f /system/app/CarHomeLauncher.apk",
-		    REMOUNT_RO
-		};
-		sendshell(commands, false, "Removing CarHome...");
+	    final CheckBoxPreference locale = mCarHomePref;
+	    if (!fileExists("/system/app/CarHomeGoogle.apk") && !fileExists("/system/app/CarHomeLauncher.apk")) {
+		popup("Error", "CarHome does not exists in /system/app!");
+		locale.setChecked(false);
+		return false;
 	    }
-	    mCarHomePref.setEnabled(false);
+	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    builder.setTitle("Confirm")
+		.setMessage("Are you sure you want to remove CarHome?")
+		.setCancelable(false)
+		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+			    dialog.cancel();
+			    String[] commands = {
+				REMOUNT_RW,
+				"busybox rm -f /system/app/CarHomeGoogle.apk",
+				"busybox rm -f /system/app/CarHomeLauncher.apk",
+				REMOUNT_RO
+			    };
+			    sendshell(commands, false, "Removing CarHome...");
+			    locale.setEnabled(false);
+			}
+		    })
+		.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+			    dialog.cancel();
+			    locale.setChecked(true);
+			}
+		    });
+	    AlertDialog alert = builder.create();
+	    alert.show();
 	}
 	else if (preference == mEmailPref)
 	    return removeSystemApp(mEmailPref, "EmailGoogle");
@@ -942,105 +1002,18 @@ public class LeoParts extends PreferenceActivity
 	    }
 	}
 	else if (preference == mCpuLedPref)
-	    return installOrRemoveAddon(mCpuLedPref, REPO + "cpu_led.apk", false, "CPU Led", "com.google.android.netmeterled");
-	else if (preference == mGalaxyLWPPref) {
-	    boolean have = mGalaxyLWPPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "busybox wget -q " + REPO + "TATLiveWallpapersAurora.apk -O /data/local/tmp/TATLiveWallpapersAurora.apk" +
-		    " && pm install -r /data/local/tmp/TATLiveWallpapersAurora.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersAurora.apk",
-		    "busybox wget -q " + REPO + "TATLiveWallpapersBlueSea.apk -O /data/local/tmp/TATLiveWallpapersBlueSea.apk" +
-		    " && pm install -r /data/local/tmp/TATLiveWallpapersBlueSea.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersBlueSea.apk",
-		    "busybox wget -q " + REPO + "TATLiveWallpapersDandelion.apk -O /data/local/tmp/TATLiveWallpapersDandelion.apk" +
-		    " && pm install -r /data/local/tmp/TATLiveWallpapersDandelion.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersDandelion.apk",
-		    "busybox wget -q " + REPO + "TATLiveWallpapersOceanWave.apk -O /data/local/tmp/TATLiveWallpapersOceanWave.apk" +
-		    " && pm install -r /data/local/tmp/TATLiveWallpapersOceanWave.apk ; busybox rm -f /data/local/tmp/TATLiveWallpapersOceanWave.apk"
-		};
-		sendshell(commands, true, "Downloading and installing Galaxy-S LWPs...");
-	    }
-	    else {
-		String[] commands = {
-		    "pm uninstall com.tat.livewallpaper.aurora",
-		    "pm uninstall com.tat.livewallpaper.bluesea",
-		    "pm uninstall com.tat.livewallpaper.dandelion",
-		    "pm uninstall com.tat.livewallpaper.oceanwaves"
-		};
-		sendshell(commands, false, "Removing Galaxy-S LWPs...");
-	    }
-	}
+	    return installOrRemoveAddon(mCpuLedPref, REPO + "cpu_led.apk", false, "CPU Led", "com.britoso.cpustatusled");
 	else if (preference == mPlayerPref)
 	    return installOrRemoveAddon(mPlayerPref, REPO + "player.apk", false, "RockPlayer", "org.freecoder.android.cmplayer");
-	else if (preference == mRemvolPref)
-	    return installOrRemoveAddon(mRemvolPref, REPO + "remvol.apk", false, "Remvol", "com.too.remvol");
-	else if (preference == mOldApp2sdPref) {
-	    boolean have = mOldApp2sdPref.isChecked();
-	    if (!have) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Info")
-		    .setMessage("The stock app2sd method will be reset to \"internal\" by default.")
-		    .setCancelable(false)
-		    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog, int id) {
-				dialog.cancel();
-				String[] commands = {
-				    "pm setInstallLocation 1",
-				    "a2sd on"
-				};
-				sendshell(commands, false, "Moving apps...");
-				finish();
-			    }
-			});
-		AlertDialog alert = builder.create();
-		alert.show();
-	    } else {
-		String[] commands = {
-		    "a2sd off",
-		};
-		sendshell(commands, false, "Restoring apps...");
-	    }
-	}
-	else if (preference == mDalvik2sdPref) {
-	    boolean have = mDalvik2sdPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "dalvik2sd on"
-		};
-		sendshell(commands, false, "Moving dalvik-cache...");
-	    } else {
-		String[] commands = {
-		    "dalvik2sd off",
-		};
-		sendshell(commands, false, "Restoring dalvik-cache...");
-	    }
-	}
-	else if (preference == mData2sdPref) {
-	    boolean have = mData2sdPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "data2sd on"
-		};
-		sendshell(commands, false, "Moving data...");
-	    } else {
-		String[] commands = {
-		    "data2sd off",
-		};
-		sendshell(commands, false, "Restoring data...");
-	    }
-	}
-	else if (preference == mMedia2sdPref) {
-	    boolean have = mMedia2sdPref.isChecked();
-	    if (!have) {
-		String[] commands = {
-		    "media2sd on"
-		};
-		sendshell(commands, false, "Moving system/media...");
-	    } else {
-		String[] commands = {
-		    "media2sd off",
-		};
-		sendshell(commands, false, "Restoring system/media...");
-	    }
-	}
+	else if (preference == mOldApp2sdPref)
+	    return activate2sd(mOldApp2sdPref, "a2sd");
+	else if (preference == mDalvik2sdPref)
+	    return activate2sd(mDalvik2sdPref, "dalvik2sd");
+	else if (preference == mData2sdPref)
+	    return activate2sd(mData2sdPref, "data2sd");
+	else if (preference == mMedia2sdPref)
+	    return activate2sd(mMedia2sdPref, "media2sd");
+
 	// always let the preference setting proceed.
 	return true;
     }

@@ -33,6 +33,12 @@
         <item>Stock</item>
         <item>LeoFroYo BIOS</item>
         <item>Scribble droid</item>
+        <item>Droid X red</item>
+        <item>NexusX cyan</item>
+        <item>NexusX green</item>
+        <item>NexusX red</item>
+        <item>NexusX white</item>
+        <item>NexusX yellow</item>
 
     </string-array>
 
@@ -40,10 +46,16 @@
         <item>stock-bootanimation.zip</item>
         <item>leofroyo-bootanimation.zip</item>
 	<item>scribble-bootanimation.zip</item>
+	<item>droidx-red-bootanimation.zip</item>
+	<item>nexusx-cyan-bootanimation.zip</item>
+	<item>nexusx-green-bootanimation.zip</item>
+	<item>nexusx-red-bootanimation.zip</item>
+	<item>nexusx-white-bootanimation.zip</item>
+	<item>nexusx-yellow-bootanimation.zip</item>
     </string-array>
 
     <string-array name="entries_wake">
-        <item>No</item>
+        <item>No thanks</item>
         <item>Trackball Wake</item>
         <item>Trackball Wake + Unlock</item>
     </string-array>
@@ -52,6 +64,16 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
+    </string-array>
+
+    <string-array name="entries_notif_bar">
+        <item>Black-on-White</item>
+        <item>White-on-Black</item>
+    </string-array>
+
+    <string-array name="entryvalues_notif_bar">
+        <item>blackonwhite-services.jar</item>
+        <item>whiteonblack-services.jar</item>
     </string-array>
 
 </resources>
