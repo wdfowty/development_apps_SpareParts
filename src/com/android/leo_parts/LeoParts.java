@@ -92,6 +92,7 @@ public class LeoParts extends PreferenceActivity
     private static final String NOTIF_BAR_PREF = "notif_bar";
     private static final String UI_SOUNDS_PREF = "ui_sounds";
     private static final String FIX_PERMS_PREF = "fix_perms";
+    private static final String FIX_MARKET_PREF = "fix_market";
     private static final String ZIPALIGN_PREF = "zipalign";
 
     private static final String REBOOT_PREF = "reboot_reboot";
@@ -103,6 +104,9 @@ public class LeoParts extends PreferenceActivity
     private static final String CAR_HOME_PREF = "car_home";
     private static final String EMAIL_PREF = "email";
     private static final String FACEBOOK_PREF = "facebook";
+    private static final String GOOGLE_GOGGLES_PREF = "google_goggles";
+    private static final String GOOGLE_TALK_PREF = "google_talk";
+    private static final String GOOGLE_VOICE_PREF = "google_voice";
     private static final String TWITTER_PREF = "twitter";
     private static final String YOUTUBE_PREF = "youtube";
 
@@ -154,6 +158,7 @@ public class LeoParts extends PreferenceActivity
     private ListPreference mNotifBarPref;
     private CheckBoxPreference mUiSoundsPref;
     private CheckBoxPreference mFixPermsPref;
+    private CheckBoxPreference mFixMarketPref;
     private CheckBoxPreference mZipAlignPref;
 
     private Preference mRebootPref;
@@ -165,6 +170,9 @@ public class LeoParts extends PreferenceActivity
     private CheckBoxPreference mCarHomePref;
     private CheckBoxPreference mEmailPref;
     private CheckBoxPreference mFacebookPref;
+    private CheckBoxPreference mGoogleGogglesPref;
+    private CheckBoxPreference mGoogleTalkPref;
+    private CheckBoxPreference mGoogleVoicePref;
     private CheckBoxPreference mTwitterPref;
     private CheckBoxPreference mYouTubePref;
 
@@ -443,10 +451,13 @@ public class LeoParts extends PreferenceActivity
 	mApp2sdPref.setOnPreferenceChangeListener(this);
 	mNotifBarPref = (ListPreference) prefSet.findPreference(NOTIF_BAR_PREF);
 	mNotifBarPref.setOnPreferenceChangeListener(this);
+	mNotifBarPref.setEnabled(false);
 	mUiSoundsPref = (CheckBoxPreference) prefSet.findPreference(UI_SOUNDS_PREF);
 	mUiSoundsPref.setOnPreferenceChangeListener(this);
 	mFixPermsPref = (CheckBoxPreference) prefSet.findPreference(FIX_PERMS_PREF);
 	mFixPermsPref.setOnPreferenceChangeListener(this);
+	mFixMarketPref = (CheckBoxPreference) prefSet.findPreference(FIX_MARKET_PREF);
+	mFixMarketPref.setOnPreferenceChangeListener(this);
 	mZipAlignPref = (CheckBoxPreference) prefSet.findPreference(ZIPALIGN_PREF);
 	mZipAlignPref.setOnPreferenceChangeListener(this);
 
@@ -512,6 +523,12 @@ public class LeoParts extends PreferenceActivity
 	mEmailPref.setOnPreferenceChangeListener(this);
 	mFacebookPref = (CheckBoxPreference) prefSet.findPreference(FACEBOOK_PREF);
 	mFacebookPref.setOnPreferenceChangeListener(this);
+	mGoogleGogglesPref = (CheckBoxPreference) prefSet.findPreference(GOOGLE_GOGGLES_PREF);
+	mGoogleGogglesPref.setOnPreferenceChangeListener(this);
+	mGoogleTalkPref = (CheckBoxPreference) prefSet.findPreference(GOOGLE_TALK_PREF);
+	mGoogleTalkPref.setOnPreferenceChangeListener(this);
+	mGoogleVoicePref = (CheckBoxPreference) prefSet.findPreference(GOOGLE_VOICE_PREF);
+	mGoogleVoicePref.setOnPreferenceChangeListener(this);
 	mTwitterPref = (CheckBoxPreference) prefSet.findPreference(TWITTER_PREF);
 	mTwitterPref.setOnPreferenceChangeListener(this);
 	mYouTubePref = (CheckBoxPreference) prefSet.findPreference(YOUTUBE_PREF);
@@ -630,9 +647,7 @@ public class LeoParts extends PreferenceActivity
 	mOldApp2sdPref.setChecked(fileExists("/system/sd/app") || fileExists("/system/sd/app-private"));
 	mDalvik2sdPref.setChecked(fileExists("/system/sd/dalvik-cache"));
 	mData2sdPref.setChecked(fileExists("/system/sd/data"));
-	setStringSummary(DATA2SD_PREF, "Unstable for now");
 	mMedia2sdPref.setChecked(fileExists("/system/sd/media"));
-	setStringSummary(MEDIA2SD_PREF, "Unstable for now");
 
 	mCarHomePref.setChecked(fileExists("/system/app/CarHomeGoogle.apk"));
 	mCarHomePref.setEnabled(fileExists("/system/app/CarHomeGoogle.apk"));
@@ -640,6 +655,12 @@ public class LeoParts extends PreferenceActivity
 	mEmailPref.setEnabled(fileExists("/system/app/EmailGoogle.apk"));
 	mFacebookPref.setChecked(fileExists("/system/app/Facebook.apk"));
 	mFacebookPref.setEnabled(fileExists("/system/app/Facebook.apk"));
+	mGoogleGogglesPref.setChecked(fileExists("/system/app/GoogleGoggles.apk"));
+	mGoogleGogglesPref.setEnabled(fileExists("/system/app/GoogleGoggles.apk"));
+	mGoogleTalkPref.setChecked(fileExists("/system/app/Talk.apk"));
+	mGoogleTalkPref.setEnabled(fileExists("/system/app/Talk.apk"));
+	mGoogleVoicePref.setChecked(fileExists("/system/app/googlevoice.apk"));
+	mGoogleVoicePref.setEnabled(fileExists("/system/app/googlevoice.apk"));
 	mTwitterPref.setChecked(fileExists("/system/app/Twitter.apk"));
 	mTwitterPref.setEnabled(fileExists("/system/app/Twitter.apk"));
 	mYouTubePref.setChecked(fileExists("/system/app/YouTube.apk"));
@@ -692,6 +713,7 @@ public class LeoParts extends PreferenceActivity
 
 	// Defaults
 	mFixPermsPref.setChecked(false);
+	mFixMarketPref.setChecked(false);
 
 	// ext relativ
 	if (!extfsIsMounted){
@@ -865,6 +887,13 @@ public class LeoParts extends PreferenceActivity
 	    sendshell(commands, true, "Fixing permissions...");
 	    return false;
 	}
+	else if (preference == mFixMarketPref) {
+	    String[] commands = {
+		"sed -i 's/false/true/' /data/data/com.android.vending/shared_prefs/vending_preferences.xml"
+	    };
+	    sendshell(commands, true, "Fixing market...");
+	    return false;
+	}
 	else if (preference == mZipAlignPref) {
 	    boolean have = mZipAlignPref.isChecked();
 	    if (!have) {
@@ -917,6 +946,12 @@ public class LeoParts extends PreferenceActivity
 	    return removeSystemApp(mEmailPref, "EmailGoogle");
 	else if (preference == mFacebookPref)
 	    return removeSystemApp(mFacebookPref, "Facebook");
+	else if (preference == mGoogleGogglesPref)
+	    return removeSystemApp(mGoogleGogglesPref, "GoogleGoggles");
+	else if (preference == mGoogleTalkPref)
+	    return removeSystemApp(mGoogleTalkPref, "Talk");
+	else if (preference == mGoogleVoicePref)
+	    return removeSystemApp(mFacebookPref, "googlevoice");
 	else if (preference == mTwitterPref)
 	    return removeSystemApp(mTwitterPref, "Twitter");
 	else if (preference == mYouTubePref)

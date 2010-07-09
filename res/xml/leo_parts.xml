@@ -119,6 +119,12 @@
 	   android:summaryOff=" Can resolve weired FC" />
 
 	<CheckBoxPreference
+	   android:key="fix_market"
+	   android:title="Fix Market"
+	   android:summaryOn=" Market fixed"
+	   android:summaryOff=" Force the Market to resync" />
+
+	<CheckBoxPreference
 	   android:key="zipalign"
 	   android:title="ZipAlign APKs"
 	   android:summaryOn=" zipalign launch at boot"
@@ -188,31 +194,49 @@
 	     android:key="car_home"
 	     android:title="Car Home"
 	     android:summaryOn=" Car Home installed"
-	     android:summaryOff=" Car Home not installed" />
+	     android:summaryOff=" Car Home removed" />
 
 	  <CheckBoxPreference
 	     android:key="email"
 	     android:title="Email"
 	     android:summaryOn=" Email installed"
-	     android:summaryOff=" Email not installed" />
+	     android:summaryOff=" Email removed" />
 
 	  <CheckBoxPreference
 	     android:key="facebook"
 	     android:title="Facebook"
 	     android:summaryOn=" Facebook installed"
-	     android:summaryOff=" Facebook not installed" />
+	     android:summaryOff=" Facebook removed" />
+
+	  <CheckBoxPreference
+	     android:key="google_goggles"
+	     android:title="Google Goggles"
+	     android:summaryOn=" Google Goggles installed"
+	     android:summaryOff=" Google Googles removed" />
+
+	  <CheckBoxPreference
+	     android:key="google_talk"
+	     android:title="Google Talk"
+	     android:summaryOn=" Google Talk installed"
+	     android:summaryOff=" Google Talk removed" />
+
+	  <CheckBoxPreference
+	     android:key="google_voice"
+	     android:title="Google Voice"
+	     android:summaryOn=" Google Voice installed"
+	     android:summaryOff=" Google Voice removed" />
 
 	  <CheckBoxPreference
 	     android:key="twitter"
 	     android:title="Twitter"
 	     android:summaryOn=" Twitter installed"
-	     android:summaryOff=" Twitter not installed" />
+	     android:summaryOff=" Twitter removed" />
 
 	  <CheckBoxPreference
 	     android:key="youtube"
 	     android:title="Youtube"
 	     android:summaryOn=" Youtube installed"
-	     android:summaryOff=" Youtube not installed" />
+	     android:summaryOff=" Youtube removed" />
 
 	</PreferenceScreen>
 
@@ -304,8 +328,8 @@
 	  <CheckBoxPreference
 	     android:key="cpu_led"
 	     android:title="%CPU LED monitor"
-	     android:summaryOn=" NetMeter+LED installed"
-	     android:summaryOff=" NetMeter+LED not installed" />
+	     android:summaryOn=" CPUstatusLED installed"
+	     android:summaryOff=" CPUstatusLED not installed" />
 
 	  <CheckBoxPreference
 	     android:key="player"
