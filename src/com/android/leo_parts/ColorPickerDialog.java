@@ -446,7 +446,7 @@ public class ColorPickerDialog extends Dialog {
 			}
 			return mProgress.setLevel(level);
 		}
-		
+
 		@Override
 		public void draw(Canvas canvas) {
 			mProgress.draw(canvas);
