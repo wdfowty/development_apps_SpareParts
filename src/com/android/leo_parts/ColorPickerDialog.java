@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.spare_parts;
+package com.android.leo_parts;
 
 import android.R;
 import android.os.Bundle;
@@ -313,7 +313,7 @@ public class ColorPickerDialog extends Dialog {
         layoutParams.setMargins(10, 0, 10, 5);
 
         TextView tv = new TextView(mContext);
-        tv.setText(com.android.spare_parts.R.string.msg_color_picker);
+        tv.setText(com.android.leo_parts.R.string.msg_color_picker);
         layout.addView(tv, layoutParams);
 
         mColorPickerView = new ColorPickerView(getContext(), onColorChangedListener, mInitialColor);
@@ -332,7 +332,7 @@ public class ColorPickerDialog extends Dialog {
         layout.addView(mEditText, layoutParams);
 
         setContentView(layout);
-        setTitle(com.android.spare_parts.R.string.title_color_picker);
+        setTitle(com.android.leo_parts.R.string.title_color_picker);
     }
 
     private OnColorChangedListener onColorChangedListener = new OnColorChangedListener() {
@@ -446,7 +446,7 @@ public class ColorPickerDialog extends Dialog {
 			}
 			return mProgress.setLevel(level);
 		}
-		
+
 		@Override
 		public void draw(Canvas canvas) {
 			mProgress.draw(canvas);

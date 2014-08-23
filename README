@@ -1,6 +1,7 @@
 Modded SpareParts by leonnib4 from xda-developers.com for LeoFroYo (Android 2.2 ROM)
 <http://android.shk-desktop.com>
 
+
 I released my sources with some obligations:
 - give me credits
 - do not say it's only your work
@@ -12,7 +13,7 @@ And some things I would (highly) prefer:
 
 HowTo use this code for your ROM:
 - change the repo name and URL in res/values/strings.xml
-- change the rom_name.equals() value in src/com/android/spare_parts/SpareParts.java
+
 
 Enjoy ;)
 

@@ -15,19 +15,19 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.spare_parts">
-    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.REBOOT" />
+        package="com.android.leo_parts">
+  <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
+  <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+  <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+  <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+  <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+  <uses-permission android:name="android.permission.DELETE_PACKAGES" />
+  <uses-permission android:name="android.permission.REBOOT" />
 
     <application android:label="@string/app_label"
             android:icon="@drawable/app_icon">
 
-        <activity android:name="SpareParts">
+        <activity android:name="LeoParts">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />

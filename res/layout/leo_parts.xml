@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/assets/res/any/strings.xml
+/* //device/apps/Settings/assets/res/any/layout/keyboard_version.xml
 **
 ** Copyright 2006, The Android Open Source Project
 **
@@ -17,12 +17,14 @@
 ** limitations under the License.
 */
 -->
-<resources>
-    <string name="app_label">Leo Parts</string>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-    <string name="repo_name">LeoFroYo</string>
-    <string name="repo_url">http://android.shk-desktop.com/LeoParts/</string>
+    <RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 
-    <string name="title_color_picker">Pick a color</string>
-    <string name="msg_color_picker">Tap on center color to confirm.\nPress back to cancel.</string>
-</resources>
+    </RelativeLayout>
+
+</ScrollView>

@@ -1,4 +1,21 @@
-package com.android.spare_parts;
+/* //device/apps/Settings/src/com/android/settings/Keyguard.java
+**
+** Copyright 2006, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+
+package com.android.leo_parts;
 
 import android.os.Message;
 import android.util.Log;
@@ -12,8 +29,17 @@ import java.lang.String;
 public class ShellInterface extends Thread {
 
     private static final String TAG = "ShellInterface";
+    private static String[] mCommands;
 
-    public static void doExec(String[] commands) {
+    public ShellInterface(String[] commands) {
+	mCommands = commands;
+    }
+
+    public int getStatus() {
+	return 42;
+    }
+
+    public void run() {
 	List<String> res = new ArrayList<String>();
 	Process process = null;
 	DataOutputStream os = null;
@@ -24,7 +50,7 @@ public class ShellInterface extends Thread {
 	try {
 	    process = Runtime.getRuntime().exec("su");
 	    os = new DataOutputStream(process.getOutputStream());
-	    for (String single : commands) {
+	    for (String single : mCommands) {
 		Log.i(TAG, "sh: " + single);
 		os.writeBytes(single + "\n");
 		os.flush();
@@ -47,12 +73,10 @@ public class ShellInterface extends Thread {
 	    res.add(e.getMessage());
 	} finally {
 	    try {
-		if (os != null) {
+		if (os != null)
 		    os.close();
-		}
-		if (osRes != null) {
+		if (osRes != null)
 		    osRes.close();
-		}
 		process.destroy();
 	    } catch (Exception e) {
 		// nothing
